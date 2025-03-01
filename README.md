@@ -1,50 +1,78 @@
-# Welcome to your Expo app 👋
+# BrainBoost
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Welcome to the BrainBoost project! This document will guide you through the setup process and explain our development workflow.
 
-## Get started
+## Getting Started
 
-1. Install dependencies
+### Prerequisites
+- Node.js (v14 or higher)
+- Git
+- npm or yarn
 
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/thanhdong200425/BrainBoost.git
+   cd BrainBoost
+   ```
+
+2. Install dependencies:
    ```bash
    npm install
+   # or
+   yarn install
    ```
 
-2. Start the app
-
+4. Run the development server:
    ```bash
-    npx expo start
+   npm run dev
+   # or
+   yarn dev
    ```
 
-In the output, you'll find options to open the app in a
+5. Open your browser and navigate to `http://localhost:3000` (or the port specified in your configuration).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Development Workflow
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Branching Strategy
 
-## Get a fresh project
+Our `master` branch is protected and requires pull requests before merging. Follow these steps to contribute(push code):
 
-When you're ready, run:
+1. Create your own development branch:
+   ```bash
+   git checkout -b development-yourname
+   ```
+   Always prefix your branch with `development-` followed by your name.
+
+2. Make your changes and commit them:
+   ```bash
+   git add .
+   git commit -m "Descriptive message about your changes"
+   ```
+
+3. Push your branch to the remote repository:
+   ```bash
+   git push -u origin development-yourname
+   ```
+
+4. Create a Pull Request (PR) on GitHub from your branch to `master`.
+
+5. Wait for code review and approval from maintainers.
+
+6. Once approved, your changes will be merged into the `master` branch.
+
+### Keep Your Branch Updated
+
+To keep your development branch up to date with the `master` branch:
 
 ```bash
-npm run reset-project
+git checkout master
+git pull
+git checkout development-yourname
+git merge master
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Resolve any conflicts that may arise during the merge.
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Structure
