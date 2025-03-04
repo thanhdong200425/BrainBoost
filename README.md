@@ -5,6 +5,7 @@ Welcome to the BrainBoost project! This document will guide you through the setu
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js (v14 or higher)
 - Git
 - npm or yarn
@@ -12,26 +13,27 @@ Welcome to the BrainBoost project! This document will guide you through the setu
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/thanhdong200425/BrainBoost.git
    cd BrainBoost
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    # or
    yarn install
    ```
 
-4. Run the development server:
+3. Run the development server:
+
    ```bash
-   npm run dev
-   # or
-   yarn dev
+   npm start
    ```
 
-5. Open your browser and navigate to `http://localhost:3000` (or the port specified in your configuration).
+4. Open your browser and navigate to `http://localhost:3000` (or the port specified in your configuration).
 
 ## Development Workflow
 
@@ -40,18 +42,22 @@ Welcome to the BrainBoost project! This document will guide you through the setu
 Our `master` branch is protected and requires pull requests before merging. Follow these steps to contribute(push code):
 
 1. Create your own development branch:
+
    ```bash
    git checkout -b development-yourname
    ```
+
    Always prefix your branch with `development-` followed by your name.
 
 2. Make your changes and commit them:
+
    ```bash
    git add .
    git commit -m "Descriptive message about your changes"
    ```
 
 3. Push your branch to the remote repository:
+
    ```bash
    git push -u origin development-yourname
    ```
