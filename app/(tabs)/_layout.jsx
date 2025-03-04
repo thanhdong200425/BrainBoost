@@ -1,11 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { View } from "react-native";
 
 export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
                 tabBarActiveTintColor: "#3D5CFF",
+                tabBarStyle: {
+                    height: 60,
+                    paddingVertical: 10,
+                },
             }}
         >
             <Tabs.Screen
@@ -26,7 +31,9 @@ export default function TabLayout() {
                 name="add"
                 options={{
                     title: "Add",
-                    tabBarIcon: ({ color, size }) => <Ionicons name="add-circle-outline" color={color} size={size} />,
+                    tabBarIcon: ({ color }) => <Ionicons name="add-circle-outline" color={color} size={40} style={{}} />,
+                    tabBarShowLabel: false,
+                    tabBarLabel: () => null,
                 }}
             />
             <Tabs.Screen
