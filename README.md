@@ -80,5 +80,3 @@ git merge master
 ```
 
 Resolve any conflicts that may arise during the merge.
-
-## Project Structure
