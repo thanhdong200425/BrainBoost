@@ -5,13 +5,11 @@ export default function RootLayout() {
     const router = useRouter();
 
     useEffect(() => {
-        router.replace('/login');
-    }, [])
+        router.replace("/login");
+    }, []);
     return (
         <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="login" />
-            {/* index => khong dung () => /tabs/index */}
-            {/* index => dung ()  => /index */}
         </Stack>
     );
 }

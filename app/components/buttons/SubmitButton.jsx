@@ -2,13 +2,13 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
-const Button = ({ onPress, text, style, textStyle }) => {
+export default function SubmitButton({ onPress, text, style, textStyle }) {
     return (
         <TouchableOpacity onPress={onPress} style={[styles.button, style]} activeOpacity={0.8}>
             <Text style={[styles.buttonText, textStyle]}>{text}</Text>
         </TouchableOpacity>
     );
-};
+}
 
 const styles = StyleSheet.create({
     button: {
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#3D5CFF", 
+        backgroundColor: "#3D5CFF",
     },
     buttonText: {
         color: "white",
@@ -25,5 +25,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
-
-export default Button;
