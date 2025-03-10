@@ -5,11 +5,11 @@ export default function RootLayout() {
     const router = useRouter();
 
     useEffect(() => {
-        router.replace("/login");
+        router.replace("/signup");
     }, []);
     return (
         <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="login" />
+            <Stack.Screen name="signup" />
         </Stack>
     );
 }
