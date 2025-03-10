@@ -1,43 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextInput, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-// Kiểm tra tính hợp lệ mật khẩu (tối thiểu 8 ký tự, chứa chữ hoa, chữ thường, và số)
 const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
 };
 
-const PasswordField = ({ label, value, onChangeText, placeholder, secureTextEntry }) => {
+const PasswordField = ({ label, value, onChangeText, placeholder, secureTextEntry, onFocus = null, onBlur = null }) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [isFocus, setIsFocus] = useState(false);
 
-    const handleChange = (text) => {
-        // Kiểm tra tính hợp lệ mật khẩu nếu có lỗi
-        if (!validatePassword(text)) {
-            setErrorMessage("Password must be at least 8 characters, including uppercase, lowercase, and numbers.");
-        } else {
-            setErrorMessage("");
-        }
+    useEffect(() => {
+        if (!isFocus && value && value.length > 0 && !validatePassword(value)) setErrorMessage("Password must be at least 8 characters, including uppercase, lowercase, and numbers.");
+        else setErrorMessage("");
+    }, [isFocus]);
 
-        onChangeText(text);  
-    };
+    const handleFocus = () => setIsFocus(true);
+    const handleBlur = () => setIsFocus(false);
+    const handleChange = (text) => onChangeText(text);
 
     return (
         <View style={styles.inputContainer}>
             <Text style={styles.label}>{label}</Text>
             <View style={styles.passwordContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder={placeholder}
-                    value={value}
-                    onChangeText={handleChange}
-                    secureTextEntry={!isPasswordVisible && secureTextEntry} 
-                />
-                <TouchableOpacity
-                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                    style={styles.eyeIcon}
-                >
+                <TextInput style={styles.input} placeholder={placeholder} value={value} onChangeText={handleChange} secureTextEntry={!isPasswordVisible && secureTextEntry} onFocus={onFocus || handleFocus} onBlur={onBlur || handleBlur} />
+                <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
                     <Ionicons name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color="#A0A0A0" />
                 </TouchableOpacity>
             </View>

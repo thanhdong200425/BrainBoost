@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextInput, Text, StyleSheet, View } from "react-native";
 
 // Hàm kiểm tra tính hợp lệ của email
@@ -7,41 +7,24 @@ const validateEmail = (email) => {
     return regex.test(email);
 };
 
-const TextField = ({ 
-    label, 
-    value, 
-    onChangeText, 
-    placeholder, 
-    keyboardType, 
-    autoCapitalize, 
-    isEmail = false  
-}) => {
+const TextField = ({ label, value, onChangeText, placeholder, keyboardType, autoCapitalize, isEmail = false }) => {
     const [errorMessage, setErrorMessage] = useState("");
+    const [isFocus, setIsFocus] = useState(false);
 
-    // Hàm xử lý thay đổi khi người dùng nhập dữ liệu
-    const handleChange = (text) => {
-        // Kiểm tra email hợp lệ 
-        if (isEmail && !validateEmail(text)) {
-            setErrorMessage("Please enter a valid email address.");
-        } else {
-            setErrorMessage("");  // Xóa thông báo lỗi khi email hợp lệ
-        }
+    useEffect(() => {
+        if (!isFocus && value && value.length > 0 && !validateEmail(value)) setErrorMessage("Please enter a valid email address.");
+        else setErrorMessage("");
+    }, [isFocus]);
 
-        onChangeText(text);  
-    };
+    const handleFocus = () => setIsFocus(true);
+    const handleBlur = () => setIsFocus(false);
+    const handleChange = (text) => onChangeText(text);
 
     return (
         <View style={styles.inputContainer}>
             <Text style={styles.label}>{label}</Text>
-            <TextInput
-                style={styles.input}
-                placeholder={placeholder}
-                value={value}
-                onChangeText={handleChange}
-                keyboardType={keyboardType}
-                autoCapitalize={autoCapitalize}
-            />
-            {/* Hiển thị thông báo lỗi nếu có */}
+            <TextInput style={styles.input} placeholder={placeholder} value={value} onChangeText={handleChange} keyboardType={keyboardType} autoCapitalize={autoCapitalize} onFocus={handleFocus} onBlur={handleBlur} />
+
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         </View>
     );

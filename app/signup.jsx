@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Alert, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import TextField from "./components/inputs/TextField";
@@ -16,15 +16,16 @@ export default function SignUpScreen() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
+    const [isFocusOnConfirmPassword, setIsFocusOnConfirmPassword] = useState(false);
 
-    const handleConfirmPasswordChange = (pwd) => {
-        setConfirmPassword(pwd);
-        if (pwd !== password) {
-            setConfirmPasswordError("Passwords do not match.");
-        } else {
-            setConfirmPasswordError("");
-        }
-    };
+    useEffect(() => {
+        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) setConfirmPasswordError("Passwords do not match.");
+        else setConfirmPasswordError("");
+    }, [isFocusOnConfirmPassword]);
+
+    const handleConfirmPasswordChange = (pwd) => setConfirmPassword(pwd);
+    const handleFocusForConfirmPassword = () => setIsFocusOnConfirmPassword(true);
+    const handleBlurForConfirmPassword = () => setIsFocusOnConfirmPassword(false);
 
     const handleSignUp = () => {
         if (!email || !password || !confirmPassword) {
@@ -39,40 +40,24 @@ export default function SignUpScreen() {
         router.push("/login");
     };
 
+    const navigateToLogIn = () => router.push("/login");
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <Text style={styles.title}>Sign Up</Text>
 
-                <TextField 
-                    label="Your Email" 
-                    value={email} 
-                    onChangeText={setEmail} 
-                    placeholder="Enter your email" 
-                    keyboardType="email-address" 
-                    autoCapitalize="none" 
-                    isEmail={true} 
-                />
+                <TextField label="Your Email" value={email} onChangeText={setEmail} placeholder="Enter your email" keyboardType="email-address" autoCapitalize="none" isEmail={true} />
 
-                <PasswordField 
-                    label="Password" 
-                    value={password} 
-                    onChangeText={setPassword} 
-                    placeholder="Enter your password" 
-                />
+                <PasswordField label="Password" value={password} onChangeText={setPassword} placeholder="Enter your password" />
 
-                <PasswordField 
-                    label="Confirm Password" 
-                    value={confirmPassword} 
-                    onChangeText={handleConfirmPasswordChange} 
-                    placeholder="Confirm your password" 
-                />
+                <PasswordField label="Confirm Password" value={confirmPassword} onChangeText={handleConfirmPasswordChange} placeholder="Confirm your password" onFocus={handleFocusForConfirmPassword} onBlur={handleBlurForConfirmPassword} />
 
                 {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
 
                 <SubmitButton text="Sign Up" onPress={handleSignUp} />
 
-                <OtherOption textContent={"Already have an account?"} linkContent={"Log In"} onPress={() => router.push("/login")} />
+                <OtherOption textContent={"Already have an account?"} linkContent={"Log In"} onPress={navigateToLogIn} />
 
                 <DividerWithText text="Or sign up with" />
 
@@ -94,8 +79,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     content: {
-        width: "90%",  
-        maxWidth: 400,  
+        width: "90%",
+        maxWidth: 400,
         backgroundColor: "white",
         padding: 25,
         borderRadius: 15,
@@ -112,7 +97,7 @@ const styles = StyleSheet.create({
     errorText: {
         color: "red",
         fontSize: 14,
-        marginTop: 5,
+        marginBottom: 25,
+        alignSelf: "flex-start",
     },
 });
-

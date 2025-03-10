@@ -24,6 +24,8 @@ export default function LoginScreen() {
         router.push("/(tabs)");
     };
 
+    const navigateToSignUp = () => router.push("/signup");
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
@@ -39,7 +41,7 @@ export default function LoginScreen() {
 
                 <SubmitButton text="Log In" onPress={handleLogin} style={styles.loginButton} textStyle={styles.loginText} />
 
-                <OtherOption textContent={"Don't have an account?"} linkContent={"Sign up"} />
+                <OtherOption textContent={"Don't have an account?"} linkContent={"Sign up"} onPress={navigateToSignUp} />
 
                 <DividerWithText text="Or login with" />
 

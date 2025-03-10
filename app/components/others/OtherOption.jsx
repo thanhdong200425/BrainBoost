@@ -1,11 +1,11 @@
 import { StyleSheet } from "react-native";
 import { View, Text, TouchableOpacity } from "react-native";
 
-export default function OtherOption({ textContent, linkContent }) {
+export default function OtherOption({ textContent, linkContent, onPress }) {
     return (
         <View style={styles.container}>
             <Text style={styles.textPart}>{textContent}</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={onPress}>
                 <Text style={styles.linkPart}>{linkContent}</Text>
             </TouchableOpacity>
         </View>
