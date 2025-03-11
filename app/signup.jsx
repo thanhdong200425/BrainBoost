@@ -19,12 +19,9 @@ export default function SignUpScreen() {
     const [isFocusOnConfirmPassword, setIsFocusOnConfirmPassword] = useState(false);
 
     useEffect(() => {
-        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) {
-            setConfirmPasswordError("Passwords do not match.");
-        } else {
-            setConfirmPasswordError("");
-        }
-    }, [isFocusOnConfirmPassword, password, confirmPassword]);
+        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) setConfirmPasswordError("Passwords do not match.");
+        else setConfirmPasswordError("");
+    }, [isFocusOnConfirmPassword, confirmPassword, password]);
 
     const handleConfirmPasswordChange = (pwd) => setConfirmPassword(pwd);
     const handleFocusForConfirmPassword = () => setIsFocusOnConfirmPassword(true);
