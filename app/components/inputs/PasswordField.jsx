@@ -7,25 +7,42 @@ const validatePassword = (password) => {
     return regex.test(password);
 };
 
-const PasswordField = ({ label, value, onChangeText, placeholder, secureTextEntry, onFocus = null, onBlur = null }) => {
+const PasswordField = ({ label, value, onChangeText, placeholder, onFocus, onBlur }) => { 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [isFocus, setIsFocus] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
     useEffect(() => {
-        if (!isFocus && value && value.length > 0 && !validatePassword(value)) setErrorMessage("Password must be at least 8 characters, including uppercase, lowercase, and numbers.");
-        else setErrorMessage("");
-    }, [isFocus]);
+        if (!isFocused && value && value.length > 0 && !validatePassword(value)) {
+            setErrorMessage("Password must be at least 8 characters, including uppercase, lowercase, and numbers.");
+        } else {
+            setErrorMessage("");
+        }
+    }, [isFocused, value]);
 
-    const handleFocus = () => setIsFocus(true);
-    const handleBlur = () => setIsFocus(false);
-    const handleChange = (text) => onChangeText(text);
+    const handleFocus = () => {
+        setIsFocused(true);
+        if (onFocus) onFocus(); 
+    };
+
+    const handleBlur = () => {
+        setIsFocused(false);
+        if (onBlur) onBlur(); 
+    };
 
     return (
         <View style={styles.inputContainer}>
             <Text style={styles.label}>{label}</Text>
             <View style={styles.passwordContainer}>
-                <TextInput style={styles.input} placeholder={placeholder} value={value} onChangeText={handleChange} secureTextEntry={!isPasswordVisible && secureTextEntry} onFocus={onFocus || handleFocus} onBlur={onBlur || handleBlur} />
+                <TextInput
+                    style={styles.input}
+                    placeholder={placeholder}
+                    value={value}
+                    onChangeText={onChangeText}
+                    secureTextEntry={!isPasswordVisible}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                />
                 <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
                     <Ionicons name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color="#A0A0A0" />
                 </TouchableOpacity>
