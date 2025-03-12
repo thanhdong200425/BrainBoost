@@ -1,37 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TextInput, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(password);
-};
-
-const PasswordField = ({ label, value, onChangeText, placeholder, secureTextEntry, onFocus = null, onBlur = null }) => {
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [isFocus, setIsFocus] = useState(false);
-
-    useEffect(() => {
-        if (!isFocus && value && value.length > 0 && !validatePassword(value)) setErrorMessage("Password must be at least 8 characters, including uppercase, lowercase, and numbers.");
-        else setErrorMessage("");
-    }, [isFocus]);
-
-    const handleFocus = () => setIsFocus(true);
-    const handleBlur = () => setIsFocus(false);
-    const handleChange = (text) => onChangeText(text);
-
+const PasswordField = ({ 
+    label, 
+    value, 
+    onChangeText, 
+    placeholder, 
+    error, 
+    isPasswordVisible, 
+    togglePasswordVisibility 
+}) => { 
     return (
         <View style={styles.inputContainer}>
             <Text style={styles.label}>{label}</Text>
             <View style={styles.passwordContainer}>
-                <TextInput style={styles.input} placeholder={placeholder} value={value} onChangeText={handleChange} secureTextEntry={!isPasswordVisible && secureTextEntry} onFocus={onFocus || handleFocus} onBlur={onBlur || handleBlur} />
-                <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
-                    <Ionicons name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color="#A0A0A0" />
+                <TextInput
+                    style={styles.input}
+                    placeholder={placeholder}
+                    value={value}
+                    onChangeText={onChangeText}
+                    secureTextEntry={!isPasswordVisible} 
+                />
+                <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+                    <Ionicons name={isPasswordVisible ? "eye-outline" : "eye-off-outline"} size={24} color="#A0A0A0" />
                 </TouchableOpacity>
             </View>
-
-            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
     );
 };
@@ -48,6 +43,10 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginTop: 10,
     },
+    passwordContainer: {
+        width: "100%",
+        position: "relative",
+    },
     input: {
         width: "100%",
         height: 50,
@@ -55,10 +54,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 15,
         fontSize: 16,
-    },
-    passwordContainer: {
-        width: "100%",
-        position: "relative",
     },
     eyeIcon: {
         position: "absolute",
