@@ -14,12 +14,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Get the list of contributors
+      # Step 2: Get the list of contributors and exclude the owner
       - name: Get contributors
         id: contributors
         run: |
           # Get the list of contributor emails (unique contributors to the repo)
-          CONTRIBUTORS=$(git log --format='%ae' | sort -u | tr '\n' ',')
+          ALL_CONTRIBUTORS=$(git log --format='%ae' | sort -u)
+          # Assume the owner's email is tied to the current actor (pusher), or specify it manually
+          OWNER_EMAIL=$(git log --author="${{ github.actor }}" --format='%ae' | head -n 1)
+          # Filter out the owner's email from the contributor list
+          CONTRIBUTORS=$(echo "$ALL_CONTRIBUTORS" | grep -v "$OWNER_EMAIL" | tr '\n' ',')
+          # Remove trailing comma if present
+          CONTRIBUTORS=${CONTRIBUTORS%,}
           echo "contributors=$CONTRIBUTORS" >> $GITHUB_OUTPUT
 
       # Step 3: Send email to contributors
@@ -32,7 +38,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }} 
           password: ${{ secrets.EMAIL_PASSWORD }}  
           subject: "New Commit Pushed to ${{ github.repository }}"
-          to: ${{ steps.contributors.outputs.contributors }}  # List of contributor emails
+          to: ${{ steps.contributors.outputs.contributors }}  # List of contributor emails (excluding owner)
           from: ${{ secrets.EMAIL_USERNAME }}  # Sender email
           body: |
             Hello contributors,
