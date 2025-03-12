@@ -60,8 +60,8 @@ export default function LoginScreen() {
                 <DividerWithText text="Or login with" />
 
                 <ThirdPartyContainer>
-                    <ThirdPartyButton iconName="logo-google" size={24} color={"white"} />
-                    <ThirdPartyButton iconName="logo-facebook" size={24} color={"white"} />
+                    <ThirdPartyButton iconName="logo-google" size={40} />
+                    <ThirdPartyButton iconName="logo-facebook" size={40} />
                 </ThirdPartyContainer>
             </View>
         </View>
@@ -77,7 +77,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     content: {
-        width: "100%",
+        width: "90%",
+        maxWidth: 400,
         backgroundColor: "white",
         padding: 25,
         borderRadius: 15,

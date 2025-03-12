@@ -87,8 +87,8 @@ export default function SignUpScreen() {
                 <DividerWithText text="Or sign up with" />
 
                 <ThirdPartyContainer>
-                    <ThirdPartyButton iconName="logo-google" size={24} color={"white"} />
-                    <ThirdPartyButton iconName="logo-facebook" size={24} color={"white"} />
+                    <ThirdPartyButton iconName="logo-google" size={40}  />
+                    <ThirdPartyButton iconName="logo-facebook" size={40}  />
                 </ThirdPartyContainer>
             </View>
         </View>
