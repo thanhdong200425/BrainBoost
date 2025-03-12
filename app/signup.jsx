@@ -18,14 +18,17 @@ export default function SignUpScreen() {
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [isFocusOnConfirmPassword, setIsFocusOnConfirmPassword] = useState(false);
 
-    useEffect(() => {
-        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) setConfirmPasswordError("Passwords do not match.");
-        else setConfirmPasswordError("");
-    }, [isFocusOnConfirmPassword, confirmPassword, password]);
+    
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
-    const handleConfirmPasswordChange = (pwd) => setConfirmPassword(pwd);
-    const handleFocusForConfirmPassword = () => setIsFocusOnConfirmPassword(true);
-    const handleBlurForConfirmPassword = () => setIsFocusOnConfirmPassword(false);
+    useEffect(() => {
+        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) {
+            setConfirmPasswordError("Passwords do not match.");
+        } else {
+            setConfirmPasswordError("");
+        }
+    }, [isFocusOnConfirmPassword, confirmPassword, password]);
 
     const handleSignUp = () => {
         if (!email || !password || !confirmPassword) {
@@ -61,21 +64,21 @@ export default function SignUpScreen() {
                     label="Password" 
                     value={password} 
                     onChangeText={setPassword} 
-                    placeholder="Enter your password" 
-                    secureTextEntry={true} 
+                    placeholder="Enter your password"
+                    error={""} 
+                    isPasswordVisible={isPasswordVisible}
+                    togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
                 />
 
                 <PasswordField 
                     label="Confirm Password" 
                     value={confirmPassword} 
-                    onChangeText={handleConfirmPasswordChange} 
-                    placeholder="Confirm your password" 
-                    secureTextEntry={true} 
-                    onFocus={handleFocusForConfirmPassword} 
-                    onBlur={handleBlurForConfirmPassword} 
+                    onChangeText={setConfirmPassword} 
+                    placeholder="Confirm your password"
+                    error={confirmPasswordError}
+                    isPasswordVisible={isConfirmPasswordVisible}
+                    togglePasswordVisibility={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
                 />
-
-                {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
 
                 <SubmitButton text="Sign Up" onPress={handleSignUp} />
 
