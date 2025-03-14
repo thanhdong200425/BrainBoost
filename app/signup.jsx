@@ -8,6 +8,7 @@ import OtherOption from "./components/others/OtherOption";
 import DividerWithText from "./components/others/DividerWithText";
 import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
+import Logos from './components/logos/Logo';
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -87,8 +88,12 @@ export default function SignUpScreen() {
                 <DividerWithText text="Or sign up with" />
 
                 <ThirdPartyContainer>
-                    <ThirdPartyButton iconName="logo-google" size={24} color={"white"} />
-                    <ThirdPartyButton iconName="logo-facebook" size={24} color={"white"} />
+                <ThirdPartyButton iconName="logo-google" size={40}>
+                        <Logos logoType="google" size={40} />
+                    </ThirdPartyButton>
+                    <ThirdPartyButton iconName="logo-facebook" size={40}>
+                        <Logos logoType="facebook" size={40} />
+                    </ThirdPartyButton>
                 </ThirdPartyContainer>
             </View>
         </View>

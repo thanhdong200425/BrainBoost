@@ -8,6 +8,7 @@ import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import SubmitButton from "./components/buttons/SubmitButton";
 import OtherOption from "./components/others/OtherOption";
+import Logos from './components/logos/Logo';
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -60,8 +61,12 @@ export default function LoginScreen() {
                 <DividerWithText text="Or login with" />
 
                 <ThirdPartyContainer>
-                    <ThirdPartyButton iconName="logo-google" size={24} color={"white"} />
-                    <ThirdPartyButton iconName="logo-facebook" size={24} color={"white"} />
+                    <ThirdPartyButton iconName="logo-google" size={40}>
+                        <Logos logoType="google" size={40} />
+                    </ThirdPartyButton>
+                    <ThirdPartyButton iconName="logo-facebook" size={40}>
+                        <Logos logoType="facebook" size={40} />
+                    </ThirdPartyButton>
                 </ThirdPartyContainer>
             </View>
         </View>
@@ -77,7 +82,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     content: {
-        width: "100%",
+        width: "90%",
+        maxWidth: 400,
         backgroundColor: "white",
         padding: 25,
         borderRadius: 15,
@@ -100,10 +106,5 @@ const styles = StyleSheet.create({
         color: "#3D5CFF",
         fontSize: 14,
         fontWeight: "500",
-    },
-    googleIcon: {
-        width: 24,
-        height: 24,
-        resizeMode: "contain",
     },
 });
