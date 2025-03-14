@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Alert, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import TextField from "./components/inputs/TextField";
-import PasswordField from "./components/inputs/PasswordField"; 
+import PasswordField from "./components/inputs/PasswordField";
 import SubmitButton from "./components/buttons/SubmitButton";
 import OtherOption from "./components/others/OtherOption";
 import DividerWithText from "./components/others/DividerWithText";
 import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
-import Logos from './components/logos/Logo';
+import Logos from "./components/logos/Logo";
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -19,7 +19,6 @@ export default function SignUpScreen() {
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [isFocusOnConfirmPassword, setIsFocusOnConfirmPassword] = useState(false);
 
-    
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
@@ -51,35 +50,11 @@ export default function SignUpScreen() {
             <View style={styles.content}>
                 <Text style={styles.title}>Sign Up</Text>
 
-                <TextField 
-                    label="Your Email" 
-                    value={email} 
-                    onChangeText={setEmail} 
-                    placeholder="Enter your email" 
-                    keyboardType="email-address" 
-                    autoCapitalize="none" 
-                    isEmail={true} 
-                />
+                <TextField label="Your Email" value={email} onChangeText={setEmail} placeholder="Enter your email" keyboardType="email-address" autoCapitalize="none" isEmail={true} />
 
-                <PasswordField 
-                    label="Password" 
-                    value={password} 
-                    onChangeText={setPassword} 
-                    placeholder="Enter your password"
-                    error={""} 
-                    isPasswordVisible={isPasswordVisible}
-                    togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
-                />
+                <PasswordField label="Password" value={password} onChangeText={setPassword} placeholder="Enter your password" error={""} isPasswordVisible={isPasswordVisible} togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)} />
 
-                <PasswordField 
-                    label="Confirm Password" 
-                    value={confirmPassword} 
-                    onChangeText={setConfirmPassword} 
-                    placeholder="Confirm your password"
-                    error={confirmPasswordError}
-                    isPasswordVisible={isConfirmPasswordVisible}
-                    togglePasswordVisibility={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
-                />
+                <PasswordField label="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} placeholder="Confirm your password" error={confirmPasswordError} isPasswordVisible={isConfirmPasswordVisible} togglePasswordVisibility={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)} />
 
                 <SubmitButton text="Sign Up" onPress={handleSignUp} />
 
@@ -88,7 +63,7 @@ export default function SignUpScreen() {
                 <DividerWithText text="Or sign up with" />
 
                 <ThirdPartyContainer>
-                <ThirdPartyButton iconName="logo-google" size={40}>
+                    <ThirdPartyButton iconName="logo-google" size={40}>
                         <Logos logoType="google" size={40} />
                     </ThirdPartyButton>
                     <ThirdPartyButton iconName="logo-facebook" size={40}>

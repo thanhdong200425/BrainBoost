@@ -2,26 +2,12 @@ import React from "react";
 import { TextInput, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const PasswordField = ({ 
-    label, 
-    value, 
-    onChangeText, 
-    placeholder, 
-    error, 
-    isPasswordVisible, 
-    togglePasswordVisibility 
-}) => { 
+const PasswordField = ({ label, value, onChangeText, placeholder, error, isPasswordVisible, togglePasswordVisibility }) => {
     return (
         <View style={styles.inputContainer}>
             <Text style={styles.label}>{label}</Text>
             <View style={styles.passwordContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder={placeholder}
-                    value={value}
-                    onChangeText={onChangeText}
-                    secureTextEntry={!isPasswordVisible} 
-                />
+                <TextInput style={styles.input} placeholder={placeholder} value={value} onChangeText={onChangeText} secureTextEntry={!isPasswordVisible} />
                 <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
                     <Ionicons name={isPasswordVisible ? "eye-outline" : "eye-off-outline"} size={24} color="#A0A0A0" />
                 </TouchableOpacity>

@@ -8,7 +8,7 @@ import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import SubmitButton from "./components/buttons/SubmitButton";
 import OtherOption from "./components/others/OtherOption";
-import Logos from './components/logos/Logo';
+import Logos from "./components/logos/Logo";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -31,24 +31,9 @@ export default function LoginScreen() {
             <View style={styles.content}>
                 <Text style={styles.title}>Log In</Text>
 
-                <TextField 
-                    label="Your Email" 
-                    value={email} 
-                    onChangeText={setEmail} 
-                    placeholder="Enter your email" 
-                    keyboardType="email-address" 
-                    autoCapitalize="none" 
-                    isEmail={true} 
-                />
+                <TextField label="Your Email" value={email} onChangeText={setEmail} placeholder="Enter your email" keyboardType="email-address" autoCapitalize="none" isEmail={true} />
 
-                <PasswordField 
-                    label="Password" 
-                    value={password} 
-                    onChangeText={setPassword} 
-                    placeholder="Enter your password" 
-                    isPasswordVisible={isPasswordVisible} 
-                    togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)} 
-                />
+                <PasswordField label="Password" value={password} onChangeText={setPassword} placeholder="Enter your password" isPasswordVisible={isPasswordVisible} togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)} />
 
                 <TouchableOpacity style={styles.forgotPassword}>
                     <Text style={styles.forgotPasswordText}>Forget password?</Text>
