@@ -9,6 +9,7 @@ import DividerWithText from "./components/others/DividerWithText";
 import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import Logos from "./components/logos/Logo";
+import { signUp } from "../helpers/authenticate";
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -23,14 +24,11 @@ export default function SignUpScreen() {
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
     useEffect(() => {
-        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) {
-            setConfirmPasswordError("Passwords do not match.");
-        } else {
-            setConfirmPasswordError("");
-        }
+        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) setConfirmPasswordError("Passwords do not match.");
+        else setConfirmPasswordError("");
     }, [isFocusOnConfirmPassword, confirmPassword, password]);
 
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         if (!email || !password || !confirmPassword) {
             Alert.alert("Error", "Please fill in all fields.");
             return;
@@ -39,7 +37,12 @@ export default function SignUpScreen() {
             Alert.alert("Error", "Passwords do not match.");
             return;
         }
-        Alert.alert("Success", "Sign up successful!");
+
+        const response = await signUp(email, password, confirmPassword);
+        if (!response.status) {
+            Alert.alert(response.error);
+            return;
+        }
         router.push("/login");
     };
 
