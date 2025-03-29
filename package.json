@@ -3,14 +3,15 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "npm run tunnel && expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "dev": "npx expo start --tunnel"
+    "dev": "npm run tunnel && npx expo start --tunnel",
+    "tunnel": "node ./helpers/getUrl.js"
   },
   "jest": {
     "preset": "jest-expo"
@@ -21,7 +22,7 @@
     "@react-navigation/native": "^7.0.14",
     "axios": "^1.8.4",
     "brainboost": "file:",
-    "expo": "~52.0.38",
+    "expo": "^52.0.41",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.8",
     "expo-font": "~13.0.4",
