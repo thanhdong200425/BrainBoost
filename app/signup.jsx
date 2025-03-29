@@ -10,9 +10,12 @@ import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import Logos from "./components/logos/Logo";
 import { signUp } from "../helpers/authenticate";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../redux/slices/authSlice";
 
 export default function SignUpScreen() {
     const router = useRouter();
+    const dispatch = useDispatch();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -42,12 +45,13 @@ export default function SignUpScreen() {
             setIsLoading(true);
             const response = await signUp(email, password, confirmPassword);
             setIsLoading(false);
-
+            console.log(response);
             if (!response.status) {
                 Alert.alert("Error", response.error || "An error occurred during sign up.");
                 return;
             }
-            router.push("/login");
+            dispatch(setCredentials({ user: response.data.user, token: response.data.token }));
+            return router.push("/");
         } catch (error) {
             setIsLoading(false);
             console.error("Sign up error:", error);
