@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Alert, StyleSheet } from "react-native";
+import { View, Text, Alert, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import TextField from "./components/inputs/TextField";
 import PasswordField from "./components/inputs/PasswordField";
@@ -10,16 +10,19 @@ import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import Logos from "./components/logos/Logo";
 import { signUp } from "../helpers/authenticate";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../redux/slices/authSlice";
 
 export default function SignUpScreen() {
     const router = useRouter();
+    const dispatch = useDispatch();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [isFocusOnConfirmPassword, setIsFocusOnConfirmPassword] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
@@ -38,12 +41,22 @@ export default function SignUpScreen() {
             return;
         }
 
-        const response = await signUp(email, password, confirmPassword);
-        if (!response.status) {
-            Alert.alert(response.error);
-            return;
+        try {
+            setIsLoading(true);
+            const response = await signUp(email, password, confirmPassword);
+            setIsLoading(false);
+            console.log(response);
+            if (!response.status) {
+                Alert.alert("Error", response.error || "An error occurred during sign up.");
+                return;
+            }
+            dispatch(setCredentials({ user: response.data.user, token: response.data.token }));
+            return router.push("/");
+        } catch (error) {
+            setIsLoading(false);
+            console.error("Sign up error:", error);
+            Alert.alert("Connection Error", "Cannot connect to the server. Please check your internet connection and try again.", [{ text: "OK" }]);
         }
-        router.push("/login");
     };
 
     const navigateToLogIn = () => router.push("/login");
@@ -55,11 +68,29 @@ export default function SignUpScreen() {
 
                 <TextField label="Your Email" value={email} onChangeText={setEmail} placeholder="Enter your email" keyboardType="email-address" autoCapitalize="none" isEmail={true} />
 
-                <PasswordField label="Password" value={password} onChangeText={setPassword} placeholder="Enter your password" error={""} isPasswordVisible={isPasswordVisible} togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)} />
+                <PasswordField
+                    label="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Enter your password"
+                    error={""}
+                    isPasswordVisible={isPasswordVisible}
+                    togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
+                />
 
-                <PasswordField label="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} placeholder="Confirm your password" error={confirmPasswordError} isPasswordVisible={isConfirmPasswordVisible} togglePasswordVisibility={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)} />
+                <PasswordField
+                    label="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder="Confirm your password"
+                    error={confirmPasswordError}
+                    isPasswordVisible={isConfirmPasswordVisible}
+                    togglePasswordVisibility={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
+                    onFocus={() => setIsFocusOnConfirmPassword(true)}
+                    onBlur={() => setIsFocusOnConfirmPassword(false)}
+                />
 
-                <SubmitButton text="Sign Up" onPress={handleSignUp} />
+                {isLoading ? <ActivityIndicator size="large" color="#3D5CFF" style={styles.loader} /> : <SubmitButton text="Sign Up" onPress={handleSignUp} />}
 
                 <OtherOption textContent={"Already have an account?"} linkContent={"Log In"} onPress={navigateToLogIn} />
 
@@ -107,5 +138,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 10,
         alignSelf: "flex-start",
+    },
+    loader: {
+        marginVertical: 15,
     },
 });
