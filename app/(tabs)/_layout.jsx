@@ -7,7 +7,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: "#3D5CFF",
         tabBarStyle: {
-          height: 60,
+          height: 80,
           paddingVertical: 10,
           display: "flex",
           justifyContent: "center",

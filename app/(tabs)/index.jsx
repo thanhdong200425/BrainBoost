@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import * as Progress from "react-native-progress";
 import CategoriesContainer from "../components/containers/CategoriesContainer.jsx"
 import UpcomingCoursesContainer from "../components/containers/UpcomingCourseContainer.jsx"
@@ -31,6 +31,7 @@ export default function HomeScreen() {
     ];
 
     return (
+        <SafeAreaView style={styles.safeArea}>
         <ScrollView style={styles.container}>
 
             {/* HEADER SIDE */}
@@ -81,10 +82,16 @@ export default function HomeScreen() {
             <Text style={styles.sectionTitle}>Start With</Text>
             <CategoriesContainer categories={categoriesData} />
         </ScrollView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: "blue",
+    },
+    
     container: {
         flex: 1,
         backgroundColor: "#fff",
