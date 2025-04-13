@@ -9,7 +9,7 @@ import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import SubmitButton from "./components/buttons/SubmitButton";
 import OtherOption from "./components/others/OtherOption";
 import Logos from "./components/logos/Logo";
-import { signIn } from "../helpers/authService";
+import { signIn } from "../helpers/authenticate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
@@ -28,8 +28,12 @@ export default function LoginScreen() {
         setIsLoading(true);
         try {
             const response = await signIn(email, password);
-            await AsyncStorage.setItem("token", response.token);
-            router.push("/(tabs)");
+            if (response.status) {
+                await AsyncStorage.setItem("token", response.data.token);
+                router.push("/(tabs)");
+            } else {
+                Alert.alert("Error", response.error || "Failed to sign in. Please try again.");
+            }
         } catch (error) {
             Alert.alert("Error", error.message || "Failed to sign in. Please try again.");
         } finally {
