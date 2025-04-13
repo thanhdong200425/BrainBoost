@@ -12,6 +12,7 @@ import Logos from "./components/logos/Logo";
 import { signUp } from "../helpers/authenticate";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -27,8 +28,11 @@ export default function SignUpScreen() {
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
     useEffect(() => {
-        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) setConfirmPasswordError("Passwords do not match.");
-        else setConfirmPasswordError("");
+        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) {
+            setConfirmPasswordError("Passwords do not match.");
+        } else {
+            setConfirmPasswordError("");
+        }
     }, [isFocusOnConfirmPassword, confirmPassword, password]);
 
     const handleSignUp = async () => {
@@ -44,18 +48,29 @@ export default function SignUpScreen() {
         try {
             setIsLoading(true);
             const response = await signUp(email, password, confirmPassword);
-            setIsLoading(false);
-            console.log(response);
+
             if (!response.status) {
                 Alert.alert("Error", response.error || "An error occurred during sign up.");
                 return;
             }
-            dispatch(setCredentials({ user: response.data.user, token: response.data.token }));
-            return router.push("/");
+
+            // Store token in AsyncStorage
+            await AsyncStorage.setItem("token", response.data.token);
+
+            // Update Redux store
+            dispatch(
+                setCredentials({
+                    user: response.data.user,
+                    token: response.data.token,
+                })
+            );
+
+            // Navigate to home screen
+            router.push("/(tabs)");
         } catch (error) {
+            Alert.alert("Error", error.message || "An unexpected error occurred. Please try again.");
+        } finally {
             setIsLoading(false);
-            console.error("Sign up error:", error);
-            Alert.alert("Connection Error", "Cannot connect to the server. Please check your internet connection and try again.", [{ text: "OK" }]);
         }
     };
 
@@ -90,7 +105,7 @@ export default function SignUpScreen() {
                     onBlur={() => setIsFocusOnConfirmPassword(false)}
                 />
 
-                {isLoading ? <ActivityIndicator size="large" color="#3D5CFF" style={styles.loader} /> : <SubmitButton text="Sign Up" onPress={handleSignUp} />}
+                <SubmitButton text="Sign Up" onPress={handleSignUp} isLoading={isLoading} />
 
                 <OtherOption textContent={"Already have an account?"} linkContent={"Log In"} onPress={navigateToLogIn} />
 
