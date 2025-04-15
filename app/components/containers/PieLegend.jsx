@@ -1,15 +1,14 @@
-// components/charts/PieLegend.jsx
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const PieLegend = ({ data }) => {
+const PieLegend = ({ data = [] }) => {
   return (
     <View style={styles.legendContainer}>
       {data.map((item, index) => (
         <View key={`${item.name}-${index}`} style={styles.legendItem}>
           <View style={[styles.legendColor, { backgroundColor: item.color }]} />
           <Text style={styles.legendText}>
-            {item.percentage} {item.name}
+            {item.percentage}% {item.name}
           </Text>
         </View>
       ))}
@@ -25,7 +24,7 @@ const styles = StyleSheet.create({
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15, 
+    marginBottom: 15,
   },
   legendColor: {
     width: 12,
