@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { DeckCard, SubmitButton } from "../../components"
+import { DeckCard, SubmitButton } from "../../components";
+import { useRouter } from "expo-router";
 
 const dummyData = [
   {
@@ -28,10 +29,11 @@ const dummyData = [
 ];
 
 export default function DecksScreen() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <SubmitButton
-        onPress={() => console.log("Create new set")}
+        onPress={() => router.push("/adddeck")}
         text="Create New Set"
         style={styles.createButton}
         textStyle={styles.createButtonText}
