@@ -9,36 +9,40 @@ import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import SubmitButton from "./components/buttons/SubmitButton";
 import OtherOption from "./components/others/OtherOption";
 import Logos from "./components/logos/Logo";
-import { signIn } from "../helpers/authenticate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { useMutation } from "@tanstack/react-query";
+import { signIn } from "../services/authService";
+import { setCredentials } from "../redux/slices/authSlice";
 
 export default function LoginScreen() {
     const router = useRouter();
+    const dispatch = useDispatch()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = async () => {
+    const mutation = useMutation({
+        mutationFn: signIn,
+        onSuccess: async (data) => {
+            await AsyncStorage.setItem('token', data.token)
+            dispatch(setCredentials({
+                accessToken: data.token
+            }))
+            router.push("/(tabs)")
+        },
+        onError: (error) => {
+            Alert.alert("Login error: ", error.message || "An unexpected error occurred. Please try again.");
+        }
+    })
+
+    const handleLogin = () => {
         if (!email || !password) {
             Alert.alert("Error", "Please enter your email and password.");
             return;
         }
 
-        setIsLoading(true);
-        try {
-            const response = await signIn(email, password);
-            if (response.status) {
-                await AsyncStorage.setItem("token", response.data.token);
-                router.push("/(tabs)");
-            } else {
-                Alert.alert("Error", response.error || "Failed to sign in. Please try again.");
-            }
-        } catch (error) {
-            Alert.alert("Error", error.message || "Failed to sign in. Please try again.");
-        } finally {
-            setIsLoading(false);
-        }
+        mutation.mutate({email, password})
     };
 
     const navigateToSignUp = () => router.push("/signup");
@@ -63,7 +67,7 @@ export default function LoginScreen() {
                     <Text style={styles.forgotPasswordText}>Forget password?</Text>
                 </TouchableOpacity>
 
-                <SubmitButton text="Log In" onPress={handleLogin} style={styles.loginButton} textStyle={styles.loginText} isLoading={isLoading} />
+                <SubmitButton text="Log In" onPress={handleLogin} style={styles.loginButton} textStyle={styles.loginText} />
 
                 <OtherOption textContent={"Don't have an account?"} linkContent={"Sign up"} onPress={navigateToSignUp} />
 

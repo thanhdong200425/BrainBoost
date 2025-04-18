@@ -9,10 +9,11 @@ import DividerWithText from "./components/others/DividerWithText";
 import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
 import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
 import Logos from "./components/logos/Logo";
-import { signUp } from "../helpers/authenticate";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation } from "@tanstack/react-query";
+import { signUp } from "../services/authService";
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -23,9 +24,36 @@ export default function SignUpScreen() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [isFocusOnConfirmPassword, setIsFocusOnConfirmPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
+
+    const mutation = useMutation({
+        mutationFn: signUp,
+        onSuccess: async (data) => {
+            await AsyncStorage.setItem('token', data.token)
+            dispatch(setCredentials({
+                accessToken: data.token
+            }))
+            router.push("/(tabs)")
+        },
+        onError: (error) => {
+            Alert.alert("Sign up error: ", error.message || "An unexpected error occurred. Please try again.");
+        }
+    })
+
+    const handleSignUp = () => {
+        if (!email || !password || !confirmPassword) {
+            Alert.alert("Please fill in all fields.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            Alert.alert("Passwords do not match.");
+            return;
+        }
+
+        mutation.mutate({ email, password, confirmPassword });
+    }
 
     useEffect(() => {
         if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) {
@@ -34,45 +62,6 @@ export default function SignUpScreen() {
             setConfirmPasswordError("");
         }
     }, [isFocusOnConfirmPassword, confirmPassword, password]);
-
-    const handleSignUp = async () => {
-        if (!email || !password || !confirmPassword) {
-            Alert.alert("Error", "Please fill in all fields.");
-            return;
-        }
-        if (confirmPasswordError) {
-            Alert.alert("Error", "Passwords do not match.");
-            return;
-        }
-
-        try {
-            setIsLoading(true);
-            const response = await signUp(email, password, confirmPassword);
-
-            if (!response.status) {
-                Alert.alert("Error", response.error || "An error occurred during sign up.");
-                return;
-            }
-
-            // Store token in AsyncStorage
-            await AsyncStorage.setItem("token", response.data.token);
-
-            // Update Redux store
-            dispatch(
-                setCredentials({
-                    user: response.data.user,
-                    token: response.data.token,
-                })
-            );
-
-            // Navigate to home screen
-            router.push("/(tabs)");
-        } catch (error) {
-            Alert.alert("Error", error.message || "An unexpected error occurred. Please try again.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const navigateToLogIn = () => router.push("/login");
 
@@ -105,7 +94,7 @@ export default function SignUpScreen() {
                     onBlur={() => setIsFocusOnConfirmPassword(false)}
                 />
 
-                <SubmitButton text="Sign Up" onPress={handleSignUp} isLoading={isLoading} />
+                <SubmitButton text={mutation.isPending ? <ActivityIndicator color="#FFF" style={styles.loader} size="large" /> :"Sign Up"} onPress={handleSignUp} />
 
                 <OtherOption textContent={"Already have an account?"} linkContent={"Log In"} onPress={navigateToLogIn} />
 
@@ -155,6 +144,6 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
     },
     loader: {
-        marginVertical: 15,
+        paddingVertical: 5
     },
 });
