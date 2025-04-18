@@ -1,19 +1,12 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, View, Text, Alert, TouchableOpacity } from "react-native";
-import TextField from "./components/inputs/TextField";
-import PasswordField from "./components/inputs/PasswordField";
-import DividerWithText from "./components/others/DividerWithText";
 import { useState } from "react";
-import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
-import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
-import SubmitButton from "./components/buttons/SubmitButton";
-import OtherOption from "./components/others/OtherOption";
-import Logos from "./components/logos/Logo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "../services/authService";
 import { setCredentials } from "../redux/slices/authSlice";
+import { TextField, PasswordField, DividerWithText, ThirdPartyContainer, ThirdPartyButton, SubmitButton, OtherOption, Logo } from "../components";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -75,10 +68,10 @@ export default function LoginScreen() {
 
                 <ThirdPartyContainer>
                     <ThirdPartyButton iconName="logo-google" size={40}>
-                        <Logos logoType="google" size={40} />
+                        <Logo logoType="google" size={40} />
                     </ThirdPartyButton>
                     <ThirdPartyButton iconName="logo-facebook" size={40}>
-                        <Logos logoType="facebook" size={40} />
+                        <Logo logoType="facebook" size={40} />
                     </ThirdPartyButton>
                 </ThirdPartyContainer>
             </View>

@@ -1,10 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
-import SubmitButton from "../components/buttons/SubmitButton.jsx";
-import UpcomingCoursesContainer from "../components/containers/UpcomingCourseContainer.jsx";
-import PieLegend from "../components/containers/PieLegend.jsx";
-import { PieChart } from "react-native-chart-kit";
 import { useRouter } from "expo-router";
+import { PieChart } from "react-native-chart-kit";
+import { SubmitButton, UpcomingCourseContainer, PieLegend } from "../../components";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -50,7 +48,7 @@ export default function HomeScreen() {
             />
 
             <Text style={styles.sectionTitle}>Recently Studied</Text>
-            <UpcomingCoursesContainer
+            <UpcomingCourseContainer
                 courses={userData.recentlyStudied}
                 selectedIndex={selectedIndex}
                 onScroll={handleScroll}

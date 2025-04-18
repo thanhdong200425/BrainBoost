@@ -1,8 +1,7 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import DeckCard from "../components/containers/DeckCard.jsx";
-import SubmitButton from "../components/buttons/SubmitButton.jsx";
+import { DeckCard, SubmitButton } from "../../components"
 
 const dummyData = [
   {

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import FlashcardFlipCarousel from "../app/components/containers/FlashcardFlipCarousel";
+import { FlashcardFlipCarousel } from "../components";
 
 // Giống như trong deckdetail
 const deck = {

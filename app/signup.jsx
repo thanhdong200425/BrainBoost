@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Alert, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import TextField from "./components/inputs/TextField";
-import PasswordField from "./components/inputs/PasswordField";
-import SubmitButton from "./components/buttons/SubmitButton";
-import OtherOption from "./components/others/OtherOption";
-import DividerWithText from "./components/others/DividerWithText";
-import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
-import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
-import Logos from "./components/logos/Logo";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
 import { signUp } from "../services/authService";
+import { TextField, PasswordField, SubmitButton, OtherOption, DividerWithText, ThirdPartyContainer, ThirdPartyButton, Logo } from "../components";
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -102,10 +95,10 @@ export default function SignUpScreen() {
 
                 <ThirdPartyContainer>
                     <ThirdPartyButton iconName="logo-google" size={40}>
-                        <Logos logoType="google" size={40} />
+                        <Logo logoType="google" size={40} />
                     </ThirdPartyButton>
                     <ThirdPartyButton iconName="logo-facebook" size={40}>
-                        <Logos logoType="facebook" size={40} />
+                        <Logo logoType="facebook" size={40} />
                     </ThirdPartyButton>
                 </ThirdPartyContainer>
             </View>

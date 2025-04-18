@@ -2,9 +2,7 @@ import React from "react";
 import { useRouter } from "expo-router";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import FlashcardFlipCarousel from "./components/containers/FlashcardFlipCarousel";
-import FlashcardPreviewItem from "./components/containers/FlashcardPreviewItem";
-import DeckNavItem from "./components/containers/DeckNavItem";
+import { FlashcardFlipCarousel, FlashcardPreviewItem, DeckNavItem } from "../components";
 
 const flashcards = [
     { term: "Apple", definition: "Quả táo" },
@@ -52,7 +50,7 @@ const DeckDetailScreen = () => {
             {/* Description Section */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Description</Text>
-                <Text style={styles.description}>“{deck.description}”</Text>
+                <Text style={styles.description}>"{deck.description}"</Text>
             </View>
 
             {/* Flashcard Preview Section */}
