@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const serverApi = axios.create({
-    baseURL: process.env.EXPO_BRAIN_BOOST_SERVER_URL,
+    baseURL: process.env.EXPO_PUBLIC_BRAIN_BOOST_SERVER_URL,
     headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

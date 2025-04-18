@@ -1,6 +1,6 @@
 import serverApi from '../helpers/axios';
 
-export const signUp = async (email, password, confirmPassword) => {
+export const signUp = async ({ email, password, confirmPassword }) => {
     try {
         const response = await serverApi.post('/auth/sign-up', {
             email,
@@ -19,7 +19,7 @@ export const signUp = async (email, password, confirmPassword) => {
     }
 };
 
-export const signIn = async (email, password) => {
+export const signIn = async ({ email, password }) => {
     try {
         const response = await serverApi.post('/auth/sign-in', {
             email,
