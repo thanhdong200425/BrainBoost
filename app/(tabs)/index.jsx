@@ -32,56 +32,56 @@ export default function HomeScreen() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.container}>
+            <ScrollView style={styles.container}>
 
-            {/* HEADER SIDE */}
-            <View style={styles.headerContainer}>
-                <View style={styles.header}>
-                    <View>
-                        <Text style={styles.greeting}>Hi, {userData.name}</Text>
-                        <Text style={styles.subtext}>Let's start learning</Text>
+                {/* HEADER SIDE */}
+                <View style={styles.headerContainer}>
+                    <View style={styles.header}>
+                        <View>
+                            <Text style={styles.greeting}>Hi, {userData.name}</Text>
+                            <Text style={styles.subtext}>Let's start learning</Text>
+                        </View>
+                        <Image source={{ uri: userData.avatar }} style={styles.avatar} />
                     </View>
-                    <Image source={{ uri: userData.avatar }} style={styles.avatar} />
-                </View>
-            </View>
-
-
-            {/* Progress section of minutes learned in a day */}
-            <View style={styles.progressContainer}>
-                <View style={styles.progressHeader}>
-                    <Text style={styles.progressText}>Learned today</Text>
-                    <Text style={styles.myCourses}>My courses</Text>
                 </View>
 
-                <Text style={styles.progressValue}>
-                    <Text style={styles.progressCurrent}>{userData.progress} min </Text>/{userData.totalProgress} min
-                </Text>
 
-                {/* Progress bar */}
-                <Progress.Bar
-                    progress={userData.progress / userData.totalProgress}
-                    width={null}
-                    height={10}
-                    borderRadius={5}
-                    color="blue"
-                    unfilledColor="#e0e0e0"
-                    borderWidth={1}
-                    style={styles.progressBar}
-                />
-            </View>
+                {/* Progress section of minutes learned in a day */}
+                <View style={styles.progressContainer}>
+                    <View style={styles.progressHeader}>
+                        <Text style={styles.progressText}>Learned today</Text>
+                        <Text style={styles.myCourses}>My courses</Text>
+                    </View>
 
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <UpcomingCoursesContainer courses={userData.upcomingCourses} />
+                    <Text style={styles.progressValue}>
+                        <Text style={styles.progressCurrent}>{userData.progress} min </Text>/{userData.totalProgress} min
+                    </Text>
+
+                    {/* Progress bar */}
+                    <Progress.Bar
+                        progress={userData.progress / userData.totalProgress}
+                        width={null}
+                        height={10}
+                        borderRadius={5}
+                        color="blue"
+                        unfilledColor="#e0e0e0"
+                        borderWidth={1}
+                        style={styles.progressBar}
+                    />
+                </View>
+
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                    <UpcomingCoursesContainer courses={userData.upcomingCourses} />
+                </ScrollView>
+
+                <Text style={styles.sectionTitle}>Learning Plan</Text>
+                <LearningPlanContainer courses={userData.learningPlan} />
+
+                <ClassesContainer classes={userData.classes} />
+
+                <Text style={styles.sectionTitle}>Start With</Text>
+                <CategoriesContainer categories={categoriesData} />
             </ScrollView>
-
-            <Text style={styles.sectionTitle}>Learning Plan</Text>
-            <LearningPlanContainer courses={userData.learningPlan} />
-
-            <ClassesContainer classes={userData.classes} />
-
-            <Text style={styles.sectionTitle}>Start With</Text>
-            <CategoriesContainer categories={categoriesData} />
-        </ScrollView>
         </SafeAreaView>
     );
 }
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "blue",
     },
-    
+
     container: {
         flex: 1,
         backgroundColor: "#fff",
