@@ -28,7 +28,7 @@ const FlashcardFlipCarousel = ({ data, showIcon = false, onIconPress, cardWidth 
           >
             {/* Front Face */}
             <View style={[styles.face, { width: cardWidth, height: cardHeight }]}>
-              <Text style={styles.cardText}>{item.term}</Text>
+              <Text style={styles.cardText}>{item.frontText}</Text>
               {showIcon && (
                 <TouchableOpacity style={styles.cornerIcon} onPress={() => onIconPress?.(item)}>
                   <Ionicons name="expand-outline" size={20} color="#333" />
@@ -38,7 +38,7 @@ const FlashcardFlipCarousel = ({ data, showIcon = false, onIconPress, cardWidth 
 
             {/* Back Face */}
             <View style={[styles.back, { width: cardWidth, height: cardHeight }]}>
-              <Text style={styles.cardText}>{item.definition}</Text>
+              <Text style={styles.cardText}>{item.backText}</Text>
               {showIcon && (
                 <TouchableOpacity style={styles.cornerIcon} onPress={() => onIconPress?.(item)}>
                   <Ionicons name="expand-outline" size={20} color="#333" />

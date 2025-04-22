@@ -1,33 +1,31 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DeckCard, SubmitButton } from "../../components"
-
-const dummyData = [
-  {
-    id: "1",
-    title: "English Vocabulary - A1 Level",
-    progress: 0.43,
-    wordsLearned: 43,
-    totalWords: 100,
-  },
-  {
-    id: "2",
-    title: "Business Vocabulary - B1 Level",
-    progress: 0.65,
-    wordsLearned: 65,
-    totalWords: 100,
-  },
-  {
-    id: "3",
-    title: "Travel Vocabulary - A2 Level",
-    progress: 0.30,
-    wordsLearned: 30,
-    totalWords: 100,
-  },
-];
+import {useQuery} from "@tanstack/react-query";
+import { getAllDecks } from "../../services/deckService";
+import { useRouter } from "expo-router";
 
 export default function DecksScreen() {
+  const router = useRouter();
+
+  const {data, isLoading, isError, error} = useQuery({
+    queryKey: ['decks'],
+    queryFn: getAllDecks
+  })
+
+  if (isLoading) return <View style={styles.loadingContainer}>
+    <ActivityIndicator size="large" color="#3D5CFF" />
+  </View>
+
+  if (isError) return <View style={styles.loadingContainer}>
+    <Text style={{color: "red"}}>Error loading decks: {error.message}</Text>
+  </View>
+
+  const handleDeckPress = (deckId) => {
+    console.log(`Navigate to deck ${deckId}`);
+  };
+
   return (
     <View style={styles.container}>
       <SubmitButton
@@ -38,20 +36,20 @@ export default function DecksScreen() {
         icon={<Ionicons name="add-circle-outline" size={22} color="#fff" />}
       />
 
-      <Text style={styles.header}>List Decks</Text>
+      <Text style={styles.header}>Your Decks</Text> 
       <FlatList
-        data={dummyData}
+        data={data?.decks || []} 
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <DeckCard
-            title={item.title}
-            progress={item.progress}
-            wordsLearned={item.wordsLearned}
-            totalWords={item.totalWords}
-            onContinuePress={() => console.log(`Continue deck ${item.id}`)}
+            name={item.name}
+            description={item.description}
+            visibility={item.visibility}
+            updatedAt={item.updatedAt}
+            onPress={() => handleDeckPress(item.id)}
           />
         )}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={styles.listContentContainer}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -60,20 +58,16 @@ export default function DecksScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
     paddingHorizontal: 20,
-    paddingTop: 20,
+    backgroundColor: "#fff",
   },
   createButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "#3D5CFF",
     paddingVertical: 14,
     borderRadius: 12,
-    marginBottom: 30,
-    marginTop: 70,
+    marginBottom: 20, 
+    marginTop: 45,
+    paddingHorizontal: 20,
   },
   createButtonText: {
     color: "#fff",
@@ -82,8 +76,20 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   header: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 20,
+    fontSize: 22, 
+    fontWeight: "bold", 
+    marginBottom: 15,
+    marginTop: 10, 
+    color: '#1A1F36',
   },
+  listContentContainer: { 
+    paddingBottom: 30,
+  },
+  loadingContainer: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });

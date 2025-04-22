@@ -1,92 +1,99 @@
 // app/components/DeckCard.jsx
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import * as Progress from "react-native-progress";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { formatDistanceToNow } from "date-fns";
 
-export default function DeckCard({ title, progress, wordsLearned, totalWords, onContinuePress }) {
+export default function DeckCard({ name, description, visibility, updatedAt, onPress }) {
+  const lastUpdated = formatDistanceToNow(new Date(updatedAt), { addSuffix: true });
+
   return (
-    <View style={styles.card}>
-      <View style={styles.row}>
-        <View style={styles.imagePlaceholder} />
-        <View style={styles.textContent}>
-          <Text style={styles.title}>{title}</Text>
-          <Progress.Bar
-            progress={progress}
-            width={null}
-            color="#3D5CFF"
-            unfilledColor="#E0E0E0"
-            borderWidth={0}
-            height={8}
-            style={styles.progress}
-          />
-          <Text style={styles.progressText}>
-            {wordsLearned} of {totalWords} words learned
-          </Text>
-          <View style={styles.bottomRow}>
-            <Text style={styles.subText}>Need to learn more</Text>
-            <TouchableOpacity style={styles.continueButton} onPress={onContinuePress}>
-              <Text style={styles.continueText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+      <View style={styles.header}>
+        <MaterialCommunityIcons 
+          name={visibility === "private" ? "lock-outline" : "earth"} 
+          size={20} 
+          color="#666" 
+        />
+        <Text style={styles.visibilityText}>
+          {visibility.charAt(0).toUpperCase() + visibility.slice(1)}
+        </Text>
       </View>
-    </View>
+      <View style={styles.content}>
+        <Text style={styles.title} numberOfLines={2}>{name}</Text>
+        <Text style={styles.description} numberOfLines={3}>{description || "No description provided."}</Text>
+      </View>
+      <View style={styles.footer}>
+        <Text style={styles.updatedText}>Updated {lastUpdated}</Text>
+        <TouchableOpacity style={styles.studyButton} onPress={onPress} activeOpacity={0.6}>
+          <Text style={styles.studyButtonText}>Study</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 1,
-    borderColor: "#ccc",
+    backgroundColor: "#F8F9FF", // Light background
     borderRadius: 16,
-    padding: 14,
+    padding: 16,
     marginBottom: 16,
-    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#E0E5FF", // Subtle border
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  row: {
+  header: {
     flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
   },
-  imagePlaceholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 6,
-    backgroundColor: "#ccc",
+  visibilityText: {
+    marginLeft: 6,
+    fontSize: 12,
+    color: "#666",
+    fontWeight: "500",
   },
-  textContent: {
-    flex: 1,
-    marginLeft: 12,
+  content: {
+    marginBottom: 12,
   },
   title: {
-    fontSize: 16,
+    fontSize: 17, 
     fontWeight: "600",
+    color: "#1A1F36",
     marginBottom: 6,
   },
-  progress: {
-    marginBottom: 6,
+  description: {
+    fontSize: 14,
+    color: "#555", 
+    lineHeight: 20,
   },
-  progressText: {
-    fontSize: 13,
-    color: "#555",
-    marginBottom: 8,
-  },
-  subText: {
-    fontSize: 13,
-    color: "#999",
-  },
-  bottomRow: {
+  footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#E0E5FF",
+    paddingTop: 10,
+    marginTop: 4,
   },
-  continueButton: {
-    backgroundColor: "#3D5CFF",
+  updatedText: {
+    fontSize: 12,
+    color: "#999",
+  },
+  studyButton: {
+    backgroundColor: '#3D5CFF',
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 20,
   },
-  continueText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "500",
+  studyButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '500',
   },
 });

@@ -19,8 +19,13 @@ export default function HomeScreen() {
         queryFn: getHomeData
     });
 
-    const navigateToDeckDetail = useCallback((item) => {
-        router.push("/deckdetail"); 
+    console.log(homeData);
+
+    const navigateToDeckDetail = useCallback((deck) => {
+        router.push({
+            pathname: "/deckdetail",
+            params: { id: deck.id }
+        });
     }, [router]);
 
     const navigateToClassDetail = useCallback((item) => {
