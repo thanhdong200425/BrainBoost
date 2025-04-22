@@ -21,8 +21,18 @@ const DeckDetailScreen = () => {
         router.push({
             pathname: "/flashcard",
             params: {
-                term: item.term,
-                def: item.definition,
+                flashcards: JSON.stringify([item]),
+                deckName: deck.name
+            },
+        });
+    };
+
+    const navigateToFlashcards = () => {
+        router.push({
+            pathname: "/flashcard",
+            params: { 
+                flashcards: JSON.stringify(deck.flashcards), 
+                deckName: deck.name 
             },
         });
     };
@@ -74,7 +84,7 @@ const DeckDetailScreen = () => {
                 <View style={styles.navContainer}>
                     <TouchableOpacity 
                         style={styles.navButton}
-                        onPress={() => router.push("/flashcard")} 
+                        onPress={navigateToFlashcards} // Updated onPress handler
                     >
                         <View style={styles.iconBackground}>
                             <Image
