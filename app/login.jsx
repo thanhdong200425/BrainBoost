@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { StyleSheet, View, Text, Alert, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { signIn } from "../services/authService";
 import { setCredentials } from "../redux/slices/authSlice";
 import { TextField, PasswordField, DividerWithText, ThirdPartyContainer, ThirdPartyButton, SubmitButton, OtherOption, Logo } from "../components";
+import Toast from 'react-native-toast-message';
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -22,16 +23,29 @@ export default function LoginScreen() {
             dispatch(setCredentials({
                 accessToken: data.token
             }))
+            Toast.show({
+                type: 'success',
+                text1: 'Login successful',
+                text2: 'Welcome back to BrainBoost!'
+            });
             router.push("/(tabs)")
         },
         onError: (error) => {
-            Alert.alert("Login error: ", error.message || "An unexpected error occurred. Please try again.");
+            Toast.show({
+                type: 'error',
+                text1: 'Login error',
+                text2: error.message || "An unexpected error occurred. Please try again."
+            });
         }
     })
 
     const handleLogin = () => {
         if (!email || !password) {
-            Alert.alert("Error", "Please enter your email and password.");
+            Toast.show({
+                type: 'info',
+                text1: 'Missing information',
+                text2: 'Please enter your email and password.'
+            });
             return;
         }
 

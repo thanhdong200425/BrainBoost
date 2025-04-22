@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Alert, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
 import { signUp } from "../services/authService";
 import { TextField, PasswordField, SubmitButton, OtherOption, DividerWithText, ThirdPartyContainer, ThirdPartyButton, Logo } from "../components";
+import Toast from 'react-native-toast-message';
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -27,21 +28,38 @@ export default function SignUpScreen() {
             dispatch(setCredentials({
                 accessToken: data.token
             }))
+            Toast.show({
+                type: 'success',
+                text1: 'Sign up successful',
+                text2: 'Welcome to BrainBoost!'
+            });
             router.push("/(tabs)")
         },
         onError: (error) => {
-            Alert.alert("Sign up error: ", error.message || "An unexpected error occurred. Please try again.");
+            Toast.show({
+                type: 'error',
+                text1: 'Sign up error',
+                text2: error.message || "An unexpected error occurred. Please try again."
+            });
         }
     })
 
     const handleSignUp = () => {
         if (!email || !password || !confirmPassword) {
-            Alert.alert("Please fill in all fields.");
+            Toast.show({
+                type: 'info',
+                text1: 'Missing information',
+                text2: 'Please fill in all fields.'
+            });
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert("Passwords do not match.");
+            Toast.show({
+                type: 'error',
+                text1: 'Password mismatch',
+                text2: 'Passwords do not match.'
+            });
             return;
         }
 

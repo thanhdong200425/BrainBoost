@@ -24,12 +24,17 @@ export default function DecksScreen() {
 
   const handleDeckPress = (deckId) => {
     console.log(`Navigate to deck ${deckId}`);
+    router.push({ pathname: '/deckdetail', params: { id: deckId } });
   };
+
+  const handleCreateNewSet = () => 
+    router.push('/adddeck'); 
+
 
   return (
     <View style={styles.container}>
       <SubmitButton
-        onPress={() => console.log("Create new set")}
+        onPress={handleCreateNewSet} // Updated onPress handler
         text="Create New Set"
         style={styles.createButton}
         textStyle={styles.createButtonText}

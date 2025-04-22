@@ -4,3 +4,4 @@ export { default as OnboardingText } from './OnboardingText';
 export { default as OtherOption } from './OtherOption';
 export { default as PaginationDots } from './PaginationDots';
 export { default as SwiperComponent } from './SwiperComponent';
+export { default as PairInput } from './PairInput';
