@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Platform, Dimensions } from "react-native";
-import SkipButton from "./components/buttons/SkipButton";
-import SwiperComponent from "./components/others/SwiperComponent";
-import ActionButtons from "./components/buttons/ActionButtons";
-import PaginationDots from "./components/others/PaginationDots";
 import { useRouter } from "expo-router";
+import { SkipButton, SwiperComponent, ActionButtons, PaginationDots } from "../components";
 
 const { width, height } = Dimensions.get("window");
 

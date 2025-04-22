@@ -1,27 +1,41 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, View, Text, Alert, TouchableOpacity } from "react-native";
-import TextField from "./components/inputs/TextField";
-import PasswordField from "./components/inputs/PasswordField";
-import DividerWithText from "./components/others/DividerWithText";
 import { useState } from "react";
-import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
-import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
-import SubmitButton from "./components/buttons/SubmitButton";
-import OtherOption from "./components/others/OtherOption";
-import Logos from "./components/logos/Logo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { useMutation } from "@tanstack/react-query";
+import { signIn } from "../services/authService";
+import { setCredentials } from "../redux/slices/authSlice";
+import { TextField, PasswordField, DividerWithText, ThirdPartyContainer, ThirdPartyButton, SubmitButton, OtherOption, Logo } from "../components";
 
 export default function LoginScreen() {
     const router = useRouter();
+    const dispatch = useDispatch()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    const mutation = useMutation({
+        mutationFn: signIn,
+        onSuccess: async (data) => {
+            await AsyncStorage.setItem('token', data.token)
+            dispatch(setCredentials({
+                accessToken: data.token
+            }))
+            router.push("/(tabs)")
+        },
+        onError: (error) => {
+            Alert.alert("Login error: ", error.message || "An unexpected error occurred. Please try again.");
+        }
+    })
 
     const handleLogin = () => {
         if (!email || !password) {
             Alert.alert("Error", "Please enter your email and password.");
             return;
         }
-        router.push("/(tabs)");
+
+        mutation.mutate({email, password})
     };
 
     const navigateToSignUp = () => router.push("/signup");
@@ -33,7 +47,14 @@ export default function LoginScreen() {
 
                 <TextField label="Your Email" value={email} onChangeText={setEmail} placeholder="Enter your email" keyboardType="email-address" autoCapitalize="none" isEmail={true} />
 
-                <PasswordField label="Password" value={password} onChangeText={setPassword} placeholder="Enter your password" isPasswordVisible={isPasswordVisible} togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)} />
+                <PasswordField
+                    label="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Enter your password"
+                    isPasswordVisible={isPasswordVisible}
+                    togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
+                />
 
                 <TouchableOpacity style={styles.forgotPassword}>
                     <Text style={styles.forgotPasswordText}>Forget password?</Text>
@@ -47,10 +68,10 @@ export default function LoginScreen() {
 
                 <ThirdPartyContainer>
                     <ThirdPartyButton iconName="logo-google" size={40}>
-                        <Logos logoType="google" size={40} />
+                        <Logo logoType="google" size={40} />
                     </ThirdPartyButton>
                     <ThirdPartyButton iconName="logo-facebook" size={40}>
-                        <Logos logoType="facebook" size={40} />
+                        <Logo logoType="facebook" size={40} />
                     </ThirdPartyButton>
                 </ThirdPartyContainer>
             </View>
