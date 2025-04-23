@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, View, Ima
 import * as Progress from "react-native-progress"
 import Icon from "react-native-vector-icons/FontAwesome"
 import { BarChart } from "react-native-gifted-charts";
+import { useRouter } from "expo-router";
 import serverApi from '../../helpers/axios';
 
 export default function ProfileScreen() {
@@ -26,6 +27,8 @@ export default function ProfileScreen() {
         fetchProfile();
     }, []);
 
+    const router = useRouter();
+
     // Du lieu tinh cho giao dien
     const userData = {
         name: "Le Van Quoc Huy",
@@ -46,8 +49,8 @@ export default function ProfileScreen() {
     }
 
     const barData = [
-        { value: 6.5, label: 'Sun' },
-        { value: 4.3, label: 'Mon', frontColor: '#177AD5' },
+        { value: 6.5, label: 'Sun' },	
+        { value: 4.3, label: 'Mon', frontColor: '#177AD5' },	
         { value: 6, label: 'Tue', frontColor: '#177AD5' },
         { value: 8, label: 'Web' },
         { value: 9.3, label: 'Thu', frontColor: '#177AD5' },
@@ -91,11 +94,11 @@ export default function ProfileScreen() {
 
                 {/* Header */}
                 <View style={styles.header}>
-                    <TouchableOpacity>
+                    <TouchableOpacity> 
                         <Icon name="arrow-left" size={24} color="#000" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Profile</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push("/settingpage")}>
                         <Icon name="cog" size={24} color="#000" />
                     </TouchableOpacity>
                 </View>
