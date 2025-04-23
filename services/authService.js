@@ -26,6 +26,8 @@ export const signIn = async ({ email, password }) => {
             password,
         });
 
+        console.log("API Base URL:", process.env.EXPO_PUBLIC_BRAIN_BOOST_SERVER_URL);
+
         return response.data;
     } catch (error) {
         if (error.response)
@@ -36,3 +38,4 @@ export const signIn = async ({ email, password }) => {
         else throw new Error('An unexpected error occurred during sign in.');
     }
 };
+

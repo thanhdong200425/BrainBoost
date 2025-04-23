@@ -1,10 +1,30 @@
-import React from "react";
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, View, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, View, Image, ActivityIndicator } from "react-native";
 import * as Progress from "react-native-progress"
 import Icon from "react-native-vector-icons/FontAwesome"
 import { BarChart } from "react-native-gifted-charts";
+import serverApi from '../../helpers/axios';
 
 export default function ProfileScreen() {
+
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await serverApi.get('/api/profile');
+                setUser(response.data.data);
+                setLoading(false);
+            } catch (err) {
+                setError(err.message || 'Failed to fetch profile. Please try again.');
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     // Du lieu tinh cho giao dien
     const userData = {
@@ -35,6 +55,36 @@ export default function ProfileScreen() {
         { value: 6.4, label: 'Sat' },
     ];
 
+    if (loading) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.center}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    if (error) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.center}>
+                    <Text style={styles.errorText}>Error: {error}</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    if (!user) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.center}>
+                    <Text>No user data available</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
@@ -53,11 +103,11 @@ export default function ProfileScreen() {
                 {/* User Info */}
                 <View style={styles.userInfoContainer}>
                     <Image
-                        source={{ uri: userData.avatar }}
+                        source={{ uri: user.avatar_url }}
                         style={styles.avatar}
                     />
-                    <Text style={styles.userName}>{userData.name}</Text>
-                    <Text style={styles.userRole}>{userData.role}</Text>
+                    <Text style={styles.userName}>{user.username}</Text>
+                    <Text style={styles.userRole}>{user.email}</Text>
 
                     {/* Icons: Notifications, Rewards, Edit */}
                     {/* <View style={styles.iconsContainer}>
