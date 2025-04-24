@@ -31,7 +31,8 @@ export default function SignUpScreen() {
             Toast.show({
                 type: 'success',
                 text1: 'Sign up successful',
-                text2: 'Welcome to BrainBoost!'
+                text2: 'Welcome to BrainBoost!',
+                position: 'top'
             });
             router.push("/(tabs)")
         },
@@ -39,7 +40,8 @@ export default function SignUpScreen() {
             Toast.show({
                 type: 'error',
                 text1: 'Sign up error',
-                text2: error.message || "An unexpected error occurred. Please try again."
+                text2: error.message || "An unexpected error occurred. Please try again.",
+                position: 'top'
             });
         }
     })
@@ -49,7 +51,8 @@ export default function SignUpScreen() {
             Toast.show({
                 type: 'info',
                 text1: 'Missing information',
-                text2: 'Please fill in all fields.'
+                text2: 'Please fill in all fields.',
+                position: 'top'
             });
             return;
         }
@@ -58,7 +61,8 @@ export default function SignUpScreen() {
             Toast.show({
                 type: 'error',
                 text1: 'Password mismatch',
-                text2: 'Passwords do not match.'
+                text2: 'Passwords do not match.',
+                position: 'top'
             });
             return;
         }

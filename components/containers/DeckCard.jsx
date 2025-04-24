@@ -1,23 +1,30 @@
 // app/components/DeckCard.jsx
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { formatDistanceToNow } from "date-fns";
 
-export default function DeckCard({ name, description, visibility, updatedAt, onPress }) {
+export default function DeckCard({ name, description, visibility, updatedAt, onPress, onEdit }) {
   const lastUpdated = formatDistanceToNow(new Date(updatedAt), { addSuffix: true });
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.header}>
-        <MaterialCommunityIcons 
-          name={visibility === "private" ? "lock-outline" : "earth"} 
-          size={20} 
-          color="#666" 
-        />
+        <Text>
+          <MaterialCommunityIcons 
+            name={visibility === "private" ? "lock-outline" : "earth"} 
+            size={20} 
+            color="#666" 
+          />
+        </Text>
         <Text style={styles.visibilityText}>
           {visibility.charAt(0).toUpperCase() + visibility.slice(1)}
         </Text>
+        <TouchableOpacity style={styles.editButton} onPress={onEdit} activeOpacity={0.6}>
+          <Text>
+            <Ionicons name="pencil" size={18} color="#666" />
+          </Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={2}>{name}</Text>
@@ -57,6 +64,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
     fontWeight: "500",
+    flex: 1,
   },
   content: {
     marginBottom: 12,
@@ -95,5 +103,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 13,
     fontWeight: '500',
+  },
+  editButton: {
+    padding: 5,
   },
 });

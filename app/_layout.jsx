@@ -9,6 +9,10 @@ import Toast from 'react-native-toast-message';
 
 const queryClient = new QueryClient();
 
+const toastConfig = {
+    position: 'top'
+};
+
 export default function RootLayout() {
     const router = useRouter();
 
@@ -26,7 +30,7 @@ export default function RootLayout() {
                     </Stack>
                 </Provider>
             </QueryClientProvider>
-            <Toast />
+            <Toast config={toastConfig} />
         </GestureHandlerRootView>
     );
 }

@@ -88,7 +88,9 @@ const PairInput = ({
           resetPosition();
         }}
       >
-        <Ionicons name="trash-outline" size={24} color="#fff" />
+        <Text>
+          <Ionicons name="trash-outline" size={24} color="#fff" />
+        </Text>
       </TouchableOpacity>
     </View>
   );

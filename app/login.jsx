@@ -26,7 +26,8 @@ export default function LoginScreen() {
             Toast.show({
                 type: 'success',
                 text1: 'Login successful',
-                text2: 'Welcome back to BrainBoost!'
+                text2: 'Welcome back to BrainBoost!',
+                position: 'top'
             });
             router.push("/(tabs)")
         },
@@ -34,7 +35,8 @@ export default function LoginScreen() {
             Toast.show({
                 type: 'error',
                 text1: 'Login error',
-                text2: error.message || "An unexpected error occurred. Please try again."
+                text2: error.message || "An unexpected error occurred. Please try again.",
+                position: 'top'
             });
         }
     })
@@ -44,7 +46,8 @@ export default function LoginScreen() {
             Toast.show({
                 type: 'info',
                 text1: 'Missing information',
-                text2: 'Please enter your email and password.'
+                text2: 'Please enter your email and password.',
+                position: 'top'
             });
             return;
         }

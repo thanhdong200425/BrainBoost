@@ -23,8 +23,17 @@ export default function DecksScreen() {
   </View>
 
   const handleDeckPress = (deckId) => {
-    console.log(`Navigate to deck ${deckId}`);
     router.push({ pathname: '/deckdetail', params: { id: deckId } });
+  };
+
+  const handleDeckEdit = (deck) => {
+    router.push({ 
+      pathname: '/editdeck', 
+      params: { 
+        id: deck.id,
+        deckData: JSON.stringify(deck)
+      } 
+    });
   };
 
   const handleCreateNewSet = () => 
@@ -34,11 +43,11 @@ export default function DecksScreen() {
   return (
     <View style={styles.container}>
       <SubmitButton
-        onPress={handleCreateNewSet} // Updated onPress handler
+        onPress={handleCreateNewSet} 
         text="Create New Set"
         style={styles.createButton}
         textStyle={styles.createButtonText}
-        icon={<Ionicons name="add-circle-outline" size={22} color="#fff" />}
+        icon={<Text><Ionicons name="add-circle-outline" size={22} color="#fff" /></Text>}
       />
 
       <Text style={styles.header}>Your Decks</Text> 
@@ -52,6 +61,7 @@ export default function DecksScreen() {
             visibility={item.visibility}
             updatedAt={item.updatedAt}
             onPress={() => handleDeckPress(item.id)}
+            onEdit={() => handleDeckEdit(item)}
           />
         )}
         contentContainerStyle={styles.listContentContainer}
@@ -65,6 +75,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     backgroundColor: "#fff",
+    flex: 1,
   },
   createButton: {
     backgroundColor: "#3D5CFF",
@@ -88,7 +99,7 @@ const styles = StyleSheet.create({
     color: '#1A1F36',
   },
   listContentContainer: { 
-    paddingBottom: 30,
+    paddingBottom: 50,
   },
   loadingContainer: {
     width: "100%",
