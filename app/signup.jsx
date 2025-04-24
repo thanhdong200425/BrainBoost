@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Alert, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import TextField from "./components/inputs/TextField";
-import PasswordField from "./components/inputs/PasswordField";
-import SubmitButton from "./components/buttons/SubmitButton";
-import OtherOption from "./components/others/OtherOption";
-import DividerWithText from "./components/others/DividerWithText";
-import ThirdPartyContainer from "./components/containers/ThirdPartyContainer";
-import ThirdPartyButton from "./components/buttons/ThirdPartyButton";
-import Logos from "./components/logos/Logo";
-import { signUp } from "../helpers/authenticate";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation } from "@tanstack/react-query";
+import { signUp } from "../services/authService";
+import { TextField, PasswordField, SubmitButton, OtherOption, DividerWithText, ThirdPartyContainer, ThirdPartyButton, Logo } from "../components";
+import Toast from 'react-native-toast-message';
 
 export default function SignUpScreen() {
     const router = useRouter();
@@ -22,42 +18,65 @@ export default function SignUpScreen() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [isFocusOnConfirmPassword, setIsFocusOnConfirmPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
-    useEffect(() => {
-        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) setConfirmPasswordError("Passwords do not match.");
-        else setConfirmPasswordError("");
-    }, [isFocusOnConfirmPassword, confirmPassword, password]);
+    const mutation = useMutation({
+        mutationFn: signUp,
+        onSuccess: async (data) => {
+            await AsyncStorage.setItem('token', data.token)
+            dispatch(setCredentials({
+                accessToken: data.token
+            }))
+            Toast.show({
+                type: 'success',
+                text1: 'Sign up successful',
+                text2: 'Welcome to BrainBoost!',
+                position: 'top'
+            });
+            router.push("/(tabs)")
+        },
+        onError: (error) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Sign up error',
+                text2: error.message || "An unexpected error occurred. Please try again.",
+                position: 'top'
+            });
+        }
+    })
 
-    const handleSignUp = async () => {
+    const handleSignUp = () => {
         if (!email || !password || !confirmPassword) {
-            Alert.alert("Error", "Please fill in all fields.");
-            return;
-        }
-        if (confirmPasswordError) {
-            Alert.alert("Error", "Passwords do not match.");
+            Toast.show({
+                type: 'info',
+                text1: 'Missing information',
+                text2: 'Please fill in all fields.',
+                position: 'top'
+            });
             return;
         }
 
-        try {
-            setIsLoading(true);
-            const response = await signUp(email, password, confirmPassword);
-            setIsLoading(false);
-            console.log(response);
-            if (!response.status) {
-                Alert.alert("Error", response.error || "An error occurred during sign up.");
-                return;
-            }
-            dispatch(setCredentials({ user: response.data.user, token: response.data.token }));
-            return router.push("/");
-        } catch (error) {
-            setIsLoading(false);
-            console.error("Sign up error:", error);
-            Alert.alert("Connection Error", "Cannot connect to the server. Please check your internet connection and try again.", [{ text: "OK" }]);
+        if (password !== confirmPassword) {
+            Toast.show({
+                type: 'error',
+                text1: 'Password mismatch',
+                text2: 'Passwords do not match.',
+                position: 'top'
+            });
+            return;
         }
-    };
+
+        mutation.mutate({ email, password, confirmPassword });
+    }
+
+    useEffect(() => {
+        if (!isFocusOnConfirmPassword && confirmPassword.length > 0 && password !== confirmPassword) {
+            setConfirmPasswordError("Passwords do not match.");
+        } else {
+            setConfirmPasswordError("");
+        }
+    }, [isFocusOnConfirmPassword, confirmPassword, password]);
 
     const navigateToLogIn = () => router.push("/login");
 
@@ -90,7 +109,7 @@ export default function SignUpScreen() {
                     onBlur={() => setIsFocusOnConfirmPassword(false)}
                 />
 
-                {isLoading ? <ActivityIndicator size="large" color="#3D5CFF" style={styles.loader} /> : <SubmitButton text="Sign Up" onPress={handleSignUp} />}
+                <SubmitButton text={mutation.isPending ? <ActivityIndicator color="#FFF" style={styles.loader} size="large" /> :"Sign Up"} onPress={handleSignUp} />
 
                 <OtherOption textContent={"Already have an account?"} linkContent={"Log In"} onPress={navigateToLogIn} />
 
@@ -98,10 +117,10 @@ export default function SignUpScreen() {
 
                 <ThirdPartyContainer>
                     <ThirdPartyButton iconName="logo-google" size={40}>
-                        <Logos logoType="google" size={40} />
+                        <Logo logoType="google" size={40} />
                     </ThirdPartyButton>
                     <ThirdPartyButton iconName="logo-facebook" size={40}>
-                        <Logos logoType="facebook" size={40} />
+                        <Logo logoType="facebook" size={40} />
                     </ThirdPartyButton>
                 </ThirdPartyContainer>
             </View>
@@ -140,6 +159,6 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
     },
     loader: {
-        marginVertical: 15,
+        paddingVertical: 5
     },
 });

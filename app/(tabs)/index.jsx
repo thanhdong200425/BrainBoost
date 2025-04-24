@@ -1,164 +1,176 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import * as Progress from "react-native-progress";
-import CategoriesContainer from "../components/containers/CategoriesContainer.jsx"
-import UpcomingCoursesContainer from "../components/containers/UpcomingCourseContainer.jsx"
-import LearningPlanContainer from "../components/containers/LearningPlanContainer.jsx"
-import ClassesContainer from "../components/containers/ClassesContainer.jsx"
+import React, { useCallback, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { PieChart } from "react-native-chart-kit";
+import { SubmitButton, PieLegend, ContentCarousel } from "../../components";
+import HomeHeader from "../../components/headers/HomeHeader";
+import { useQuery } from "@tanstack/react-query";
+import { getHomeData } from "../../services/homeService";
+import { ITEM_WIDTH } from "../../constants/sizes";
 
 export default function HomeScreen() {
+    const router = useRouter();
+    const [selectedDeckIndex, setSelectedDeckIndex] = useState(0);
+    const [selectedClassIndex, setSelectedClassIndex] = useState(0);
+    const [selectedFolderIndex, setSelectedFolderIndex] = useState(0);
+
+    const { data: homeData, isLoading, isError, error } = useQuery({
+        queryKey: ['homeData'],
+        queryFn: getHomeData
+    });
+
+    const navigateToDeckDetail = useCallback((deck) => {
+        router.push({
+            pathname: "/deckdetail",
+            params: { id: deck.id }
+        });
+    }, [router]);
+
+    const navigateToClassDetail = useCallback((item) => {
+        router.push("/classdetail"); 
+    }, [router]);
+
+    const navigateToFolderDetail = useCallback((item) => {
+        router.push("/folderdetail"); 
+    }, [router]);
+
+    if (isLoading) return (
+        <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+    );
+
+    if (isError) return (
+        <View style={styles.loadingContainer}>
+            <Text>Error: {error.message}</Text>
+            <Text>Try to refresh the page</Text>
+        </View>
+    );
 
     const userData = {
-        name: "Lam",
-        avatar: "",
-        progress: 46,
-        totalProgress: 60,
-        upcomingCourses: [{}, {}, {}, {}],
-        learningPlan: [
-            { name: "Packaging Design", progress: 40, total: 48 },
-            { name: "Product Design", progress: 6, total: 24 },
-        ],
-        classes: [
-            { name: "Class1", image: "https://example.com/math.jpg" },
-            { name: "Class2", image: "https://example.com/science.jpg" },
-            { name: "Class3", image: "https://example.com/history.jpg" },
+        name: "Dong",
+        progress: [
+            { name: "Good", percentage: 70, color: "#A5D8FF", legendFontColor: "#7F7F7F", legendFontSize: 12 },
+            { name: "Need to learn more", percentage: 30, color: "#FDAF75", legendFontColor: "#7F7F7F", legendFontSize: 12 },
         ],
     };
 
-    const categoriesData = [
-        { name: "Animal", icon: "paw" },
-        { name: "Sport", icon: "futbol-o" },
-        { name: "Job", icon: "briefcase" },
-    ];
+    const handleScroll = (event, setIndex) => {
+        const offsetX = event.nativeEvent.contentOffset.x;
+        const index = Math.round(offsetX / ITEM_WIDTH);
+        setIndex(index);
+    };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+            <HomeHeader 
+                userData={userData}
+                stats={{
+                    decks: homeData.decks.length,
+                    classes: homeData.classes.length,
+                    folders: homeData.folders.length
+                }}
+            />
 
-            {/* HEADER SIDE */}
-            <View style={styles.headerContainer}>
-                <View style={styles.header}>
-                    <View>
-                        <Text style={styles.greeting}>Hi, {userData.name}</Text>
-                        <Text style={styles.subtext}>Let's start learning</Text>
-                    </View>
-                    <Image source={{ uri: userData.avatar }} style={styles.avatar} />
-                </View>
-            </View>
-
-
-            {/* Progress section of minutes learned in a day */}
-            <View style={styles.progressContainer}>
-                <View style={styles.progressHeader}>
-                    <Text style={styles.progressText}>Learned today</Text>
-                    <Text style={styles.myCourses}>My courses</Text>
-                </View>
-
-                <Text style={styles.progressValue}>
-                    <Text style={styles.progressCurrent}>{userData.progress} min </Text>/{userData.totalProgress} min
-                </Text>
-
-                {/* Progress bar */}
-                <Progress.Bar
-                    progress={userData.progress / userData.totalProgress}
-                    width={null}
-                    height={10}
-                    borderRadius={5}
-                    color="blue"
-                    unfilledColor="#e0e0e0"
-                    borderWidth={1}
-                    style={styles.progressBar}
+            <View style={styles.content}>
+                <SubmitButton
+                    text="✨ Generate New Flashcards with AI ✨"
+                    onPress={() => console.log("AI Flashcard button pressed")}
+                    style={styles.buttonShadow}
+                    textStyle={{ fontSize: 15 }}
                 />
+
+                <Text style={styles.sectionTitle}>Your Decks</Text>
+                <ContentCarousel
+                    items={homeData.decks}
+                    type="deck"
+                    selectedIndex={selectedDeckIndex}
+                    onScroll={(event) => handleScroll(event, setSelectedDeckIndex)}
+                    onPressItem={navigateToDeckDetail}
+                />
+
+                <Text style={styles.sectionTitle}>Your Classes</Text>
+                <ContentCarousel
+                    items={homeData.classes}
+                    type="class"
+                    selectedIndex={selectedClassIndex}
+                    onScroll={(event) => handleScroll(event, setSelectedClassIndex)}
+                    onPressItem={navigateToClassDetail}
+                />
+
+                <Text style={styles.sectionTitle}>Your Folders</Text>
+                <ContentCarousel
+                    items={homeData.folders}
+                    type="folder"
+                    selectedIndex={selectedFolderIndex}
+                    onScroll={(event) => handleScroll(event, setSelectedFolderIndex)}
+                    onPressItem={navigateToFolderDetail}
+                />
+
+                <Text style={styles.sectionTitle}>Your Progress Chart</Text>
+                <View style={styles.chartContainer}>
+                    <PieChart
+                        data={userData.progress.map((item) => ({
+                            name: item.name,
+                            population: item.percentage,
+                            color: item.color,
+                            legendFontColor: item.legendFontColor,
+                            legendFontSize: item.legendFontSize,
+                        }))}
+                        width={170}
+                        height={170}
+                        chartConfig={{
+                            backgroundGradientFrom: "#fff",
+                            backgroundGradientTo: "#fff",
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            decimalPlaces: 0,
+                        }}
+                        accessor="population"
+                        backgroundColor="transparent"
+                        paddingLeft="50"
+                        absolute
+                        style={{ alignSelf: "center" }}
+                        hasLegend={false}
+                    />
+                    <PieLegend data={userData.progress} />
+                </View>
             </View>
-
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <UpcomingCoursesContainer courses={userData.upcomingCourses} />
-            </ScrollView>
-
-            <Text style={styles.sectionTitle}>Learning Plan</Text>
-            <LearningPlanContainer courses={userData.learningPlan} />
-
-            <ClassesContainer classes={userData.classes} />
-
-            <Text style={styles.sectionTitle}>Start With</Text>
-            <CategoriesContainer categories={categoriesData} />
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: "#fff",
+        paddingHorizontal: 15,
     },
-
-    headerContainer: {
-        padding: 25,
-        backgroundColor: "blue",
-        height: 170,
+    content: {
+        paddingTop: 20,
     },
-
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+    buttonShadow: {
+        marginBottom: 25,
+        backgroundColor: "#3D5CFF",
+        borderRadius: 12,
     },
-
-    greeting: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "white",
-    },
-
-    subtext: {
-        fontSize: 16,
-        color: "white",
-    },
-
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-    },
-
-    progressContainer: {
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 20,
-        margin: 20,
-        marginTop: -60,
-        borderWidth: 1,
-    },
-
-    progressHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 5,
-    },
-
-    progressText: {
-        fontSize: 16,
-    },
-
-    progressValue: {
-        fontSize: 18,
-    },
-
-    progressCurrent: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#333",
-    },
-
-    progressBar: {
-        marginTop: 8,
-        height: 10,
-        borderRadius: 5,
-    },
-
     sectionTitle: {
         fontSize: 20,
-        fontWeight: "bold",
+        fontWeight: "600",
+        color: "#1A1F36",
+        marginTop: 10,
+        marginBottom: 16,
         paddingHorizontal: 20,
-        paddingVertical: 10,
+    },
+    chartContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 130,
+        paddingHorizontal: 20,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
 });
