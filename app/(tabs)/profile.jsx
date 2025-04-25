@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, View, Image, ActivityIndicator, Platform } from "react-native";
 import * as Progress from "react-native-progress"
 import Icon from "react-native-vector-icons/FontAwesome"
-import { Ionicons } from '@expo/vector-icons';
 import { BarChart } from "react-native-gifted-charts";
 import serverApi from '../../helpers/axios';
 import { useRouter } from "expo-router";
+import StatItem from "../../components/containers/StatItem";
 
 export default function ProfileScreen() {
 
@@ -281,21 +281,24 @@ export default function ProfileScreen() {
                     </View>
                     {/* Course Stats */}
                     <View style={styles.courseStatsContainer}>
-                        <View style={styles.statItem}>
-                            <Icon name="clock-o" size={40} color="#007AFF" />
-                            <Text style={styles.statNumber}>{userData.courses.inProgress}</Text>
-                            <Text style={styles.statLabel}>In Progress</Text>
-                        </View>
-                        <View style={styles.statItem}>
-                            <Icon name="check-circle" size={40} color="#34C759" />
-                            <Text style={styles.statNumber}>{userData.courses.completed}</Text>
-                            <Text style={styles.statLabel}>Completed</Text>
-                        </View>
-                        <View style={styles.statItem}>
-                            <Icon name="calendar" size={40} color="#FF9500" />
-                            <Text style={styles.statNumber}>{userData.courses.upcoming}</Text>
-                            <Text style={styles.statLabel}>Upcoming</Text>
-                        </View>
+                        <StatItem
+                            iconName="clock-o"
+                            iconColor="#007AFF"
+                            number={userData.courses.inProgress}
+                            label="In Progress"
+                        />
+                        <StatItem
+                            iconName="check-circle"
+                            iconColor="#34C759"
+                            number={userData.courses.completed}
+                            label="Completed"
+                        />
+                        <StatItem
+                            iconName="calendar"
+                            iconColor="#FF9500"
+                            number={userData.courses.upcoming}
+                            label="Upcoming"
+                        />
                     </View>
                 </View>
 
