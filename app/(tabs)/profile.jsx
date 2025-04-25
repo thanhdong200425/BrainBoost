@@ -163,7 +163,7 @@ export default function ProfileScreen() {
                         <Icon name="arrow-left" size={24} color="#000" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Profile</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push('/settingpage')}>
                         <Icon name="cog" size={24} color="#000" />
                     </TouchableOpacity>
                 </View>
