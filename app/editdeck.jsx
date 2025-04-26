@@ -32,7 +32,6 @@ const EditDeckScreen = () => {
 
     
     const [flashcards, setFlashcards] = useState(() => {
-        console.log('Existing flashcards:', existingFlashcards);
         if (existingFlashcards?.length > 0) {
             return existingFlashcards.map(card => ({
                 id: card.id,
