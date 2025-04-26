@@ -7,7 +7,6 @@ import Toast from 'react-native-toast-message';
 import { updateDeck, createFlashcards, updateFlashcard, getFlashcardsById } from '../services/deckService';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
-import { validateDeckData } from '../helpers/flashcardUtils';
 
 const EditDeckScreen = () => {
     const router = useRouter();
@@ -30,8 +29,10 @@ const EditDeckScreen = () => {
         queryKey: ['flashcards', id],
         queryFn: () => getFlashcardsById(id)
     });
+
     
     const [flashcards, setFlashcards] = useState(() => {
+        console.log('Existing flashcards:', existingFlashcards);
         if (existingFlashcards?.length > 0) {
             return existingFlashcards.map(card => ({
                 id: card.id,
@@ -171,17 +172,6 @@ const EditDeckScreen = () => {
     };
 
     const onSubmit = (data) => {
-        if (!validateDeckData({ ...data, flashcards })) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Please enter a valid title and description.',
-                position: 'top'
-            });
-            return;
-        }
-
-        // Start by updating the deck
         updateDeckMutation.mutate({
             name: data.title,
             description: data.description,
@@ -267,7 +257,6 @@ const EditDeckScreen = () => {
                     <Controller
                         control={control}
                         name="title"
-                        rules={{ required: "Title is required" }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
                                 style={[styles.input, errors.title && styles.inputError]}
@@ -288,7 +277,6 @@ const EditDeckScreen = () => {
                     <Controller
                         control={control}
                         name="description"
-                        rules={{ required: "Description is required" }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
                                 style={[styles.input, styles.descriptionInput, errors.description && styles.inputError]}
