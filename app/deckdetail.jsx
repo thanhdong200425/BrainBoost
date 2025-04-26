@@ -37,6 +37,16 @@ const DeckDetailScreen = () => {
         });
     };
 
+    const navigateToLearn = () => {
+        router.push({
+            pathname: "/learn", 
+            params: { 
+                flashcards: JSON.stringify(deck.flashcards), 
+                deckName: deck.name 
+            },
+        });
+    };
+
     if (isLoading) {
         return (
             <View style={[styles.container, styles.centerContent]}>
@@ -98,7 +108,7 @@ const DeckDetailScreen = () => {
                     
                     <TouchableOpacity 
                         style={styles.navButton}
-                        onPress={() => console.log("Navigate to Learn")} 
+                        onPress={navigateToLearn} 
                     >
                         <View style={[styles.iconBackground, styles.learnBackground]}>
                             <Image
