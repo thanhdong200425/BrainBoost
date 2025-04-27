@@ -42,7 +42,9 @@ const DeckDetailScreen = () => {
             pathname: "/learn", 
             params: { 
                 flashcards: JSON.stringify(deck.flashcards), 
-                deckName: deck.name 
+                deckName: deck.name,
+                deckId: id,
+                data: JSON.stringify()
             },
         });
     };
