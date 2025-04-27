@@ -52,13 +52,16 @@ const DeckDetailScreen = () => {
 
     const navigateToLearn = () => {
         router.push({
-            pathname: '/learn',
-            params: {
-                flashcards: JSON.stringify(deck.flashcards),
+           pathname: "/learn", 
+            params: { 
+                flashcards: JSON.stringify(deck.flashcards), 
                 deckName: deck.name,
-            },
+                deckId: id,
+                data: JSON.stringify()
+              },
         });
     };
+            
 
     const navigateToTestScreen = () => {
         router.push({
