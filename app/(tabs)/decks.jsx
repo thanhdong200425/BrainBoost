@@ -1,26 +1,47 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { DeckCard, SubmitButton } from "../../components"
-import {useQuery} from "@tanstack/react-query";
-import { getAllDecks } from "../../services/deckService";
+import { DeckCard, SubmitButton } from "../../components";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getAllDecks, deleteDeck } from "../../services/deckService";
 import { useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
 
 export default function DecksScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const {data, isLoading, isError, error} = useQuery({
+  const { 
+    data, 
+    isLoading, 
+    isError, 
+    error 
+  } = useQuery({
     queryKey: ['decks'],
     queryFn: getAllDecks
-  })
+  });
 
-  if (isLoading) return <View style={styles.loadingContainer}>
-    <ActivityIndicator size="large" color="#3D5CFF" />
-  </View>
-
-  if (isError) return <View style={styles.loadingContainer}>
-    <Text style={{color: "red"}}>Error loading decks: {error.message}</Text>
-  </View>
+  const deleteMutation = useMutation({
+    mutationFn: (deckId) => deleteDeck(deckId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['decks'] });
+      queryClient.invalidateQueries({ queryKey: ['homeData'] });
+      
+      Toast.show({
+        type: 'success',
+        text1: 'Deck deleted successfully!',
+        position: 'top'
+      });
+    },
+    onError: (error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to delete deck',
+        text2: error.message || 'Please try again later',
+        position: 'top'
+      });
+    }
+  });
 
   const handleDeckPress = (deckId) => {
     router.push({ pathname: '/deckdetail', params: { id: deckId } });
@@ -36,9 +57,24 @@ export default function DecksScreen() {
     });
   };
 
-  const handleCreateNewSet = () => 
-    router.push('/adddeck'); 
+  const handleCreateNewSet = () => router.push('/adddeck');
+  
+  const handleDeckDelete = (deckId) => {
+    deleteMutation.mutate(deckId);
+  };
 
+  // Loading and error states
+  if (isLoading) return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#3D5CFF" />
+    </View>
+  );
+
+  if (isError) return (
+    <View style={styles.loadingContainer}>
+      <Text style={styles.errorText}>Error loading decks: {error.message}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -62,6 +98,7 @@ export default function DecksScreen() {
             updatedAt={item.updatedAt}
             onPress={() => handleDeckPress(item.id)}
             onEdit={() => handleDeckEdit(item)}
+            onDelete={() => handleDeckDelete(item.id)}
           />
         )}
         contentContainerStyle={styles.listContentContainer}
@@ -107,5 +144,10 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    fontSize: 16
   }
 });
