@@ -51,7 +51,6 @@ export default function HomeScreen() {
         </View>
     );
 
-    // Make sure homeData exists and has the expected properties
     const safeHomeData = homeData || { decks: [], classes: [], folders: [] };
 
     const userData = {

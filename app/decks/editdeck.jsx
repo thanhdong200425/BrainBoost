@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, SafeAreaView, StatusBar } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { PairInput, SubmitButton } from '../../components'; 
@@ -10,10 +10,26 @@ import { useForm, Controller } from 'react-hook-form';
 
 const EditDeckScreen = () => {
     const router = useRouter();
-    const { id, deckData, existingFlashcard } = useLocalSearchParams();
+    const { id, deckData, flashcardData: flashcardDataString } = useLocalSearchParams();
     const queryClient = useQueryClient();
     const parsedDeckData = deckData ? JSON.parse(deckData) : null;
     
+    // Parse flashcardData string
+    let parsedFlashcardData = [];
+    try {
+        if (flashcardDataString) {
+            parsedFlashcardData = JSON.parse(flashcardDataString);
+        }
+    } catch (e) {
+        console.error("Error parsing flashcardData:", e);
+        Toast.show({
+            type: 'error',
+            text1: 'Error loading flashcards',
+            text2: 'Could not parse flashcard data.',
+            position: 'top'
+        });
+    }
+
     if (!parsedDeckData) {
         router.back();
         Toast.show({
@@ -27,8 +43,9 @@ const EditDeckScreen = () => {
 
     
     const [flashcards, setFlashcards] = useState(() => {
-        if (existingFlashcard?.length > 0) {
-            return existingFlashcard.map(card => ({
+        // Use the parsed data here
+        if (parsedFlashcardData && parsedFlashcardData.length > 0) {
+            return parsedFlashcardData.map(card => ({
                 id: card.id,
                 term: card.frontText || card.term || '',
                 definition: card.backText || card.definition || '',
@@ -201,14 +218,17 @@ const EditDeckScreen = () => {
     
     // Check if any flashcards have changes
     const hasFlashcardChanges = () => {
+        // Use the parsed data here as well
+        const originalFlashcards = parsedFlashcardData || [];
+        
         // Check if flashcards array length is different
-        if (!existingFlashcard || flashcards.length !== existingFlashcard.length) 
+        if (flashcards.length !== originalFlashcards.length) 
             return true;
             
         // Check for changes in existing flashcards
         const existingCards = flashcards.filter(card => !card.isNew);
         for (const card of existingCards) {
-            const originalCard = existingFlashcard.find(
+            const originalCard = originalFlashcards.find(
                 origCard => origCard.id === card.id
             );
             
@@ -233,7 +253,8 @@ const EditDeckScreen = () => {
     const isButtonDisabled = isSubmitting || (!isDirty && !hasFlashcardChanges());
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" />
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
@@ -365,21 +386,21 @@ const EditDeckScreen = () => {
                     <Ionicons name="add" size={30} color="#fff" />
                 </Text>
             </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FD',
+        backgroundColor: '#FFF',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 15,
-        paddingTop: 40,
+        paddingTop: 10,
         paddingBottom: 15,
         backgroundColor: '#FFF',
         borderBottomWidth: 1,

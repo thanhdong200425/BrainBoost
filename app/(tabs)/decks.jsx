@@ -50,7 +50,7 @@ export default function DecksScreen() {
 
   const handleDeckEdit = async (deck) => {
     try {
-      const flashcards = queryClient.fetchQuery({
+      const flashcards = await queryClient.fetchQuery({
         queryKey: ['flashcards', deck.id],
         queryFn: () => getFlashcardsById(deck.id)
       })
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     marginBottom: 20, 
-    marginTop: 45,
+    marginTop: 15,
     paddingHorizontal: 20,
   },
   createButtonText: {

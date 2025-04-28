@@ -246,7 +246,7 @@ const DeckDetailScreen = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F8F9FD',
+        backgroundColor: '#FFF',
     },
     container: { flex: 1, backgroundColor: '#F8F9FD' },
     header: {
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
-        paddingTop: 30,
+        paddingTop: 10,
         paddingBottom: 15,
         backgroundColor: '#FFF',
         borderBottomWidth: 1,

@@ -38,7 +38,7 @@ const HomeHeader = ({ userData }) => {
 const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: '#fff',
-        paddingTop: 40,
+        paddingTop: 10,
         paddingHorizontal: 16,
         paddingBottom: 16,
         alignSelf: 'center',
