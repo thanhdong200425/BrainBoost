@@ -36,3 +36,16 @@ export const signIn = async ({ email, password }) => {
         else throw new Error('An unexpected error occurred during sign in.');
     }
 };
+
+export const changePassword = async (current_password, new_password) => {
+    try {
+        const response = await serverApi.put('/api/change-password', {
+            current_password,
+            new_password,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Change password service error:', error?.response?.data || error.message);
+        throw error;
+    }
+};

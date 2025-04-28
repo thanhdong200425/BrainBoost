@@ -7,11 +7,8 @@ import SettingItem from "../components/containers/SettingItem";
 export default function SettingsScreen() {
 
     const settingsOptions = [
-        {
-          iconName: "person-circle-outline",
-          label: "Account Setting",
-          onPress: () => router.push("/editprofile"), 
-        },
+        { iconName: "person-circle-outline", label: "Account Setting", onPress: () => router.push("/editprofile")},
+        { iconName: "key-outline", label: "Change Password", onPress: () => router.push("/changepassword")},
         { iconName: "shield-checkmark-outline", label: "Privacy", onPress: () => {} },
         { iconName: "star-outline", label: "Feedback", onPress: () => {} },
         { iconName: "information-circle-outline", label: "Help", onPress: () => {} },
@@ -46,6 +43,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
+        backgroundColor: "white"
     },
 
     header: {

@@ -8,33 +8,16 @@ import serverApi from '../helpers/axios';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 export default function EditProfile() {
-
     const router = useRouter()
-
-    const [showPassword, setShowPassword] = useState(false);
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
-    // Password toggle button component
-    const PasswordToggle = (
-        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
-            <Ionicons name={showPassword ? "eye-off" : "eye"} size={20} color="#666" />
-        </TouchableOpacity>
-    );
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         dob: '',
-        current_password: '',
-        new_password: '',
     });
 
     useEffect(() => {
@@ -66,40 +49,25 @@ export default function EditProfile() {
         }));
     };
 
-
     const handleUpdateProfile = async () => {
         try {
-            const { username, dob, avatar_url, current_password, new_password } = formData;
-
-            if (current_password || new_password) {
-                if (!current_password || !new_password) {
-                    alert('Please fill in both current password and new password.');
-                    return;
-                }
-            }
+            const { username, dob, avatar_url } = formData;
 
             console.log('formData:', formData);
             const response = await serverApi.put('/api/profile', {
                 username,
                 dob,
                 avatar_url,
-                current_password,  // thêm nếu có
-                new_password       // thêm nếu có
             });
 
             if (response.status === 200) {
                 alert('Profile updated successfully!');
             } else {
-                alert('Failed to update profile. Please check your current password.');
+                alert('Failed to update profile.');
             }
         } catch (error) {
             console.error("Update error:", error?.response?.data || error.message);
-
-            if (error?.response?.status === 400) {
-                alert(error.response.data.message || 'Incorrect current password.');
-            } else {
-                alert('Failed to update profile. Please try again later.');
-            }
+            alert('Failed to update profile. Please try again later.');
         }
     };
 
@@ -135,7 +103,6 @@ export default function EditProfile() {
 
     const handleUpdateAvatar = async () => {
         try {
-            // Mở thư viện ảnh
             const result = await launchImageLibrary({
                 mediaType: 'photo',
                 quality: 1,
@@ -151,7 +118,6 @@ export default function EditProfile() {
                 return;
             }
 
-            // Lấy URL hoặc file từ kết quả
             const imageUri = result.assets[0].uri;
 
             const response = await serverApi.put(
@@ -159,10 +125,8 @@ export default function EditProfile() {
                 { avatar_url: imageUri },
             );
 
-            // Cập nhật state user với avatar mới
             const updatedUser = response.data.data;
 
-            // Cập nhật cả user và formData
             setUser(updatedUser);
             setFormData((prev) => ({
                 ...prev,
@@ -189,7 +153,6 @@ export default function EditProfile() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Profile Image */}
                 <View style={styles.profileImageContainer}>
                     <Image
                         source={{ uri: user.avatar_url }}
@@ -200,7 +163,6 @@ export default function EditProfile() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Form Fields using FormField component */}
                 <View style={styles.formContainer}>
                     <FormFieldEdit
                         label="User name"
@@ -224,25 +186,6 @@ export default function EditProfile() {
                         value={formData.dob}
                         onChange={handleChange}
                     />
-
-                    <FormFieldEdit
-                        label="Current Password"
-                        name="current_password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.current_password}
-                        onChange={handleChange}
-                        suffix={PasswordToggle}
-                    />
-
-                    <FormFieldEdit
-                        label="New Password"
-                        name="new_password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.new_password}
-                        onChange={handleChange}
-                        suffix={PasswordToggle}
-                    />
-
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -292,7 +235,4 @@ const styles = StyleSheet.create({
     formContainer: {
         width: '100%',
     },
-    eyeIcon: {
-        padding: 5,
-    }
 });
