@@ -5,24 +5,11 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, SafeAreaView, ScrollVi
 import FormFieldEdit from '../components/containers/FormFieldEdit';
 import { useRouter } from "expo-router";
 import serverApi from '../helpers/axios';
-import { launchImageLibrary } from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker'
 
 export default function EditProfile() {
 
     const router = useRouter()
-
-    const [showPassword, setShowPassword] = useState(false);
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
-    // Password toggle button component
-    const PasswordToggle = (
-        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
-            <Ionicons name={showPassword ? "eye-off" : "eye"} size={20} color="#666" />
-        </TouchableOpacity>
-    );
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -33,8 +20,6 @@ export default function EditProfile() {
         username: '',
         email: '',
         dob: '',
-        current_password: '',
-        new_password: '',
     });
 
     useEffect(() => {
@@ -66,40 +51,24 @@ export default function EditProfile() {
         }));
     };
 
-
     const handleUpdateProfile = async () => {
         try {
-            const { username, dob, avatar_url, current_password, new_password } = formData;
-
-            if (current_password || new_password) {
-                if (!current_password || !new_password) {
-                    alert('Please fill in both current password and new password.');
-                    return;
-                }
-            }
+            const { username, dob, avatar_url } = formData;
 
             console.log('formData:', formData);
             const response = await serverApi.put('/api/profile', {
                 username,
                 dob,
-                avatar_url,
-                current_password,  // thêm nếu có
-                new_password       // thêm nếu có
+                avatar_url
             });
 
             if (response.status === 200) {
                 alert('Profile updated successfully!');
             } else {
-                alert('Failed to update profile. Please check your current password.');
+                alert('Failed to update profile.');
             }
         } catch (error) {
             console.error("Update error:", error?.response?.data || error.message);
-
-            if (error?.response?.status === 400) {
-                alert(error.response.data.message || 'Incorrect current password.');
-            } else {
-                alert('Failed to update profile. Please try again later.');
-            }
         }
     };
 
@@ -135,19 +104,23 @@ export default function EditProfile() {
 
     const handleUpdateAvatar = async () => {
         try {
-            // Mở thư viện ảnh
-            const result = await launchImageLibrary({
-                mediaType: 'photo',
-                quality: 1,
-            });
-
-            if (result.didCancel) {
-                console.log('User cancelled image picker');
-                return;
+            // Xin quyền truy cập thư viện ảnh
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Permission to access media library is required')
+                return
             }
 
-            if (result.errorCode) {
-                console.error('ImagePicker Error:', result.errorMessage);
+            // Open thu vien anh
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 1,
+                allowsEditing: true,
+                aspect: [1, 1]
+            })
+
+            if (result.canceled) {
+                console.log('User cancelled image picker');
                 return;
             }
 
@@ -170,6 +143,7 @@ export default function EditProfile() {
             }));
 
             console.log('Avatar updated:', response.data.data);
+            router.replace('/(tabs)/profile')
         } catch (err) {
             console.error('Update avatar error:', err);
             setError(err.message || 'Failed to update avatar.');
@@ -208,7 +182,6 @@ export default function EditProfile() {
                         value={formData.username}
                         onChange={handleChange}
                     />
-
                     <FormFieldEdit
                         label="Email address"
                         name="email"
@@ -217,32 +190,12 @@ export default function EditProfile() {
                         onChange={handleChange}
                         prefix="@"
                     />
-
                     <FormFieldEdit
                         label="Date of birth"
                         name="dob"
                         value={formData.dob}
                         onChange={handleChange}
                     />
-
-                    <FormFieldEdit
-                        label="Current Password"
-                        name="current_password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.current_password}
-                        onChange={handleChange}
-                        suffix={PasswordToggle}
-                    />
-
-                    <FormFieldEdit
-                        label="New Password"
-                        name="new_password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.new_password}
-                        onChange={handleChange}
-                        suffix={PasswordToggle}
-                    />
-
                 </View>
             </ScrollView>
         </SafeAreaView>

@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
@@ -9,7 +9,22 @@ import { setCredentials } from "../redux/slices/authSlice";
 import { TextField, PasswordField, DividerWithText, ThirdPartyContainer, ThirdPartyButton, SubmitButton, OtherOption, Logo } from "../components";
 import Toast from 'react-native-toast-message';
 
+// import { GoogleSignin, isSuccessResponse, isErrorWithCode, statusCodes } from "@react-native-google-signin/google-signin"
+// import { navigate } from "expo-router/build/global-state/routing";
+
 export default function LoginScreen() {
+
+    // Login by Google:
+    // useEffect(() => {
+    //     GoogleSignin.configure({
+    //         iosClientId:
+    //             "182681219412-116tvru8m1porgoefqj0vs4be6k2fvbq.apps.googleusercontent.com",
+    //         webClientId:
+    //             "182681219412-9qc0eqmo49o5dq9t5knr7qgesbs7b2f1.apps.googleusercontent.com",
+    //         profileImageSize: 150,
+    //     })
+    // })
+
     const router = useRouter();
     const dispatch = useDispatch()
     const [email, setEmail] = useState("");
@@ -52,10 +67,49 @@ export default function LoginScreen() {
             return;
         }
 
-        mutation.mutate({email, password})
+        mutation.mutate({ email, password })
     };
 
     const navigateToSignUp = () => router.push("/signup");
+
+    // const [isSubmitting, setIsSubmitting] = useState(false)
+    // const handleGoogleSignIn = async () => {
+    //     try {
+    //         setIsSubmitting(true)
+    //         await GoogleSignin.hasPlayServices()
+    //         const response = await GoogleSignin.signIn()
+    //         if (isSuccessResponse(response)) {
+    //             const { isToken, user } = response.data
+    //             const { name, email, photo } = user
+    //             Toast.show({
+    //                 type: 'success',
+    //                 text1: 'Login Successful',
+    //                 text2: `Welcome, ${name}!`,
+    //                 position: 'top'
+    //             });
+    //             router.push("/");
+    //         } else {
+    //             showMessage("Google Signin was cancelled")
+    //         }
+    //         setIsSubmitting(false)
+    //     } catch (error) {
+    //         if (isErrorWithCode(error)) {
+    //             switch (error.code) {
+    //                 case statusCodes.IN_PROGRESS:
+    //                     showMessage("Google Signin is in progress")
+    //                     break;
+    //                 case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+    //                     showMessage("Play services are not available")
+    //                     break;
+    //                 default:
+    //                     showMessage(error.code)
+    //             }
+    //         } else {
+    //             showMessage("An error occured")
+    //         }
+    //         setIsSubmitting(false)
+    //     }
+    // }
 
     return (
         <View style={styles.container}>

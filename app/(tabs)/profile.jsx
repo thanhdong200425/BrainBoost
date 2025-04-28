@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, View, Image, ActivityIndicator, Platform } from "react-native";
-import * as Progress from "react-native-progress"
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, StyleSheet, View, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome"
 import { BarChart } from "react-native-gifted-charts";
 import serverApi from '../../helpers/axios';
 import { useRouter } from "expo-router";
 import StatItem from "../../components/containers/StatItem";
+import ProgressBar from "../../components/containers/ProgressBar";
+import InviteFriends from "../../components/footer/InviteFriends";
 
 export default function ProfileScreen() {
-
     // Nháp
     const router = useRouter();
-
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -33,9 +32,7 @@ export default function ProfileScreen() {
 
     // Du lieu tinh cho giao dien
     const userData = {
-        name: "Le Van Quoc Huy",
         role: "UX/UI Designer",
-        avatar: "https://imgcdn.stablediffusionweb.com/2024/10/23/b46077a4-c646-44b6-954a-be6400cde587.jpg",
         hoursSpent: "14h 9m",
         progress: {
             total: 161,
@@ -90,69 +87,6 @@ export default function ProfileScreen() {
         );
     }
 
-    // Update avt
-    // const handleUpdateAvatar = async () => {
-    //     try {
-    //         let formData = new FormData();
-
-    //         if (Platform.OS === 'web') {
-    //             // Dùng input type="file" cho web
-    //             const input = document.createElement('input');
-    //             input.type = 'file';
-    //             input.accept = 'image/*';
-    //             input.onchange = async () => {
-    //                 if (!input.files || input.files.length === 0) return;
-    //                 const file = input.files[0];
-    //                 formData.append('avatar', file);
-
-    //                 await uploadAvatar(formData);
-    //             };
-    //             input.click();
-    //         } else {
-    //             // Mobile
-    //             const result = await ImagePicker.launchImageLibraryAsync({
-    //                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //                 quality: 1,
-    //             });
-
-    //             if (result.canceled || !result.assets.length) {
-    //                 console.log('User cancelled or no image selected');
-    //                 return;
-    //             }
-
-    //             const asset = result.assets[0];
-    //             const uri = asset.uri;
-    //             const name = uri.split('/').pop();
-    //             const type = mime.lookup(uri) || 'image/jpeg';
-
-    //             formData.append('avatar', {
-    //                 uri,
-    //                 name,
-    //                 type,
-    //             });
-
-    //             await uploadAvatar(formData);
-    //         }
-    //     } catch (error) {
-    //         console.error('Upload error:', error);
-    //     }
-    // };
-
-    // const uploadAvatar = async (formData) => {
-    //     try {
-    //         const response = await serverApi.put('/api/profile', formData, {
-    //             headers: {
-    //                 'Content-Type': 'multipart/form-data',
-    //             },
-    //         });
-
-    //         setUser(response.data.data);
-    //         console.log('Avatar updated:', response.data.data);
-    //     } catch (error) {
-    //         console.error('Update failed:', error.response?.data || error.message);
-    //     }
-    // };
-
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
@@ -178,22 +112,6 @@ export default function ProfileScreen() {
                     </View>
                     <Text style={styles.userName}>{user.username}</Text>
                     <Text style={styles.userRole}>{user.email}</Text>
-
-                    {/* Icons: Notifications, Rewards, Edit */}
-                    {/* <View style={styles.iconsContainer}>
-                        <TouchableOpacity style={styles.iconLabel}>
-                            <Icon style={styles.iconButton} name="bell" size={21} color="#000" />
-                            <Text style={styles.iconText}>Notifs</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.iconLabel}>
-                            <Icon style={styles.iconButton} name="trophy" size={21} color="#000" />
-                            <Text style={styles.iconText}>Rewards</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.iconLabel}>
-                            <Icon style={styles.iconButton} name="edit" size={21} color="#000" />
-                            <Text style={styles.iconText}>Edit</Text>
-                        </TouchableOpacity>
-                    </View> */}
                 </View>
 
                 {/* Steve Job */}
@@ -240,45 +158,9 @@ export default function ProfileScreen() {
                         {userData.progress.total} <Text style={styles.progressLabel}>Total Activity</Text>
                     </Text>
                     {/* Progress Bars */}
-                    <View style={styles.progressBars}>
-                        <Progress.Bar
-                            progress={userData.progress.activity / 100}
-                            width={null}
-                            height={8}
-                            borderRadius={5}
-                            color="#007AFF"
-                            unfilledColor="#E0E0E0"
-                            borderWidth={0}
-                            style={styles.progressBar}
-                        />
-                        <Text style={styles.progressText}>{userData.progress.activity}</Text>
-                    </View>
-                    <View style={styles.progressBars}>
-                        <Progress.Bar
-                            progress={userData.progress.completed / 100}
-                            width={null}
-                            height={8}
-                            borderRadius={5}
-                            color="#00e31f"
-                            unfilledColor="#E0E0E0"
-                            borderWidth={0}
-                            style={styles.progressBar}
-                        />
-                        <Text style={styles.progressText}>{userData.progress.completed}</Text>
-                    </View>
-                    <View style={styles.progressBars}>
-                        <Progress.Bar
-                            progress={userData.progress.upcoming / 100}
-                            width={null}
-                            height={8}
-                            borderRadius={5}
-                            color="#ff8f00"
-                            unfilledColor="#E0E0E0"
-                            borderWidth={0}
-                            style={styles.progressBar}
-                        />
-                        <Text style={styles.progressText}>{userData.progress.upcoming}</Text>
-                    </View>
+                    <ProgressBar value={userData.progress.activity} color="#007AFF" />
+                    <ProgressBar value={userData.progress.completed} color="#00e31f" />
+                    <ProgressBar value={userData.progress.upcoming} color="#ff8f00" />
                     {/* Course Stats */}
                     <View style={styles.courseStatsContainer}>
                         <StatItem
@@ -303,25 +185,7 @@ export default function ProfileScreen() {
                 </View>
 
                 {/* Invite Friends Section */}
-                <View style={styles.inviteContainer}>
-                    <View style={{ flex: 0.5, alignItems: "center" }}>
-                        <Image
-                            style={styles.imageInvite}
-                            source={require("../../assets/images/invite.png")}
-                            resizeMode="contain"
-                        />
-                    </View>
-
-                    <View style={styles.inviteHeaderContainer}>
-                        <Text style={styles.inviteTitle}>Invite your friends</Text>
-                        <Text style={styles.inviteSubtitle}>
-                            Tell your friends it's free and fun to learn on Skillzy!
-                        </Text>
-                        <TouchableOpacity style={styles.inviteButton}>
-                            <Text style={styles.inviteButtonText} onPress={() => router.push("../editprofile")}>Invite friends</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <InviteFriends />
             </ScrollView>
         </SafeAreaView >
     )
@@ -391,25 +255,6 @@ const styles = StyleSheet.create({
         color: "#A0A0A0",
         marginTop: 5,
     },
-    // iconsContainer: {
-    //     flexDirection: "row",
-    //     marginTop: 25
-    // },
-    // iconLabel: {
-    //     alignItems: "center",
-    //     marginHorizontal: 15,
-    // },
-    // iconButton: {
-    //     padding: 14,
-    //     borderRadius: 10,
-    //     backgroundColor: "#dddede"
-    // },
-    // iconText: {
-    //     fontSize: 11.5,
-    //     color: "#858585",
-    //     marginTop: 5,
-    //     fontWeight: "bold"
-    // },
     steveJobsContainer: {
         marginHorizontal: 20,
         backgroundColor: "#F5F5F5",
@@ -498,83 +343,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#A0A0A0",
     },
-    progressBars: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: 10,
-    },
-    progressBar: {
-        flex: 1,
-        marginRight: 10,
-    },
-    progressText: {
-        fontSize: 15,
-        color: "#A0A0A0",
-    },
+
     courseStatsContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 25,
-    },
-    statItem: {
-        alignItems: "center",
-        padding: 12,
-        borderRadius: 5,
-        paddingVertical: 25,
-        backgroundColor: "#f7fcff",
-    },
-    statNumber: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginTop: 5,
-    },
-    statLabel: {
-        fontSize: 14,
-        color: "#A0A0A0",
-        marginTop: 5,
-    },
-
-
-    inviteContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginHorizontal: 20,
-        marginTop: 30,
-        padding: 20,
-        backgroundColor: "#003d65",
-        borderRadius: 10,
-    },
-    imageInvite: {
-        width: 100,
-        height: 100,
-        resizeMode: 'contain',
-    },
-    inviteHeaderContainer: {
-        flex: 1,
-        alignItems: "center"
-    },
-    inviteTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#fff",
-    },
-    inviteSubtitle: {
-        fontSize: 14,
-        color: "#fff",
-        marginTop: 5,
-        textAlign: "center",
-    },
-    inviteButton: {
-        marginTop: 15,
-        backgroundColor: "#049cff",
-        paddingVertical: 5,
-        paddingHorizontal: 20,
-        borderRadius: 20,
-    },
-    inviteButtonText: {
-        fontSize: 15,
-        color: "#fff",
-        paddingHorizontal: 5
     },
 })
