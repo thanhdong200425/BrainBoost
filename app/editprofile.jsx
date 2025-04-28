@@ -8,13 +8,11 @@ import serverApi from '../helpers/axios';
 import * as ImagePicker from 'expo-image-picker'
 
 export default function EditProfile() {
-
     const router = useRouter()
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
 
     const [formData, setFormData] = useState({
         username: '',
@@ -59,7 +57,7 @@ export default function EditProfile() {
             const response = await serverApi.put('/api/profile', {
                 username,
                 dob,
-                avatar_url
+                avatar_url,
             });
 
             if (response.status === 200) {
@@ -69,6 +67,7 @@ export default function EditProfile() {
             }
         } catch (error) {
             console.error("Update error:", error?.response?.data || error.message);
+            alert('Failed to update profile. Please try again later.');
         }
     };
 
@@ -124,7 +123,6 @@ export default function EditProfile() {
                 return;
             }
 
-            // Lấy URL hoặc file từ kết quả
             const imageUri = result.assets[0].uri;
 
             const response = await serverApi.put(
@@ -132,10 +130,8 @@ export default function EditProfile() {
                 { avatar_url: imageUri },
             );
 
-            // Cập nhật state user với avatar mới
             const updatedUser = response.data.data;
 
-            // Cập nhật cả user và formData
             setUser(updatedUser);
             setFormData((prev) => ({
                 ...prev,
@@ -163,7 +159,6 @@ export default function EditProfile() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Profile Image */}
                 <View style={styles.profileImageContainer}>
                     <Image
                         source={{ uri: user.avatar_url }}
@@ -174,7 +169,6 @@ export default function EditProfile() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Form Fields using FormField component */}
                 <View style={styles.formContainer}>
                     <FormFieldEdit
                         label="User name"
@@ -245,7 +239,4 @@ const styles = StyleSheet.create({
     formContainer: {
         width: '100%',
     },
-    eyeIcon: {
-        padding: 5,
-    }
 });
