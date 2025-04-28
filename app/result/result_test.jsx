@@ -3,7 +3,8 @@ import { View, ScrollView, Text, TouchableOpacity, StyleSheet } from 'react-nati
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Svg, Circle } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
-import SubmitButton from '../components/buttons/SubmitButton';
+import SubmitButton from '../../components/buttons/SubmitButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CIRCLE_CONFIG = {
     SIZE: 120,
@@ -25,11 +26,11 @@ const ResultTestScreen = () => {
     const circumference = 2 * Math.PI * radius;
     const strokeOffset = circumference - (percentage / 100) * circumference;
 
-    const navigateToDeck = () => router.push(deckId ? `/deck/${deckId}` : '/');
-    const retakeTest = () => router.replace(`/test?deckId=${deckId}`);
+    const navigateToDeck = () => router.push(deckId ? `/decks/deckdetail?id=${deckId}` : '/(tabs)');
+    const retakeTest = () => router.replace(`/learning/test?deckId=${deckId}`);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
             <Header correct={correct} totalQuestions={totalQuestions} onClose={navigateToDeck} />
             <ScrollView contentContainerStyle={styles.content}>
                 <Text style={styles.title}>You're making progress!</Text>
@@ -49,7 +50,7 @@ const ResultTestScreen = () => {
 
                 {incorrectList.length > 0 && <IncorrectAnswersList incorrectList={incorrectList} />}
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -141,6 +142,10 @@ const IncorrectAnswersList = ({ incorrectList }) => (
 );
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#FFF',
+    },
     container: { flex: 1, backgroundColor: '#FFF' },
     header: {
         flexDirection: 'row',

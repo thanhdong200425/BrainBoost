@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import ProgressBar from '../components/containers/ProgressBar';
-import AnswerOption from '../components/containers/AnswerOption';
-import SubmitButton from '../components/buttons/SubmitButton';
+import ProgressBar from '../../components/containers/ProgressBar';
+import AnswerOption from '../../components/containers/AnswerOption';
+import SubmitButton from '../../components/buttons/SubmitButton';
 
 // Mock Data
 const mockQuestions = [
@@ -61,7 +62,7 @@ export default function TestScreen() {
         (_, idx) => allResponses[idx] !== mockQuestions[idx].correctAnswer
       );
       router.push({
-        pathname: '/result_test',
+        pathname: '/result/result_test',
         params: {
           deckId,
           correctCount: String(correctCount),
@@ -73,7 +74,7 @@ export default function TestScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
@@ -124,11 +125,15 @@ export default function TestScreen() {
           />
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: { flex: 1, backgroundColor: '#fff' },
   header: {
     flexDirection: 'row',

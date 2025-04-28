@@ -7,21 +7,25 @@ import HomeHeader from "../../components/headers/HomeHeader";
 import { useQuery } from "@tanstack/react-query";
 import { getHomeData } from "../../services/homeService";
 import { ITEM_WIDTH } from "../../constants/sizes";
+import { useSelector } from "react-redux";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
     const router = useRouter();
     const [selectedDeckIndex, setSelectedDeckIndex] = useState(0);
     const [selectedClassIndex, setSelectedClassIndex] = useState(0);
     const [selectedFolderIndex, setSelectedFolderIndex] = useState(0);
+    const accessToken = useSelector((state) => state.auth.accessToken);
 
     const { data: homeData, isLoading, isError, error } = useQuery({
         queryKey: ['homeData'],
-        queryFn: getHomeData
+        queryFn: getHomeData,
+        enabled: !!accessToken, 
     });
 
     const navigateToDeckDetail = useCallback((deck) => {
         router.push({
-            pathname: "/deckdetail",
+            pathname: "/decks/deckdetail",
             params: { id: deck.id }
         });
     }, [router]);
@@ -39,13 +43,16 @@ export default function HomeScreen() {
             <ActivityIndicator size="large" color="#0000ff" />
         </View>
     );
-
+    
     if (isError) return (
         <View style={styles.loadingContainer}>
             <Text>Error: {error.message}</Text>
             <Text>Try to refresh the page</Text>
         </View>
     );
+
+    // Make sure homeData exists and has the expected properties
+    const safeHomeData = homeData || { decks: [], classes: [], folders: [] };
 
     const userData = {
         name: "Dong",
@@ -62,85 +69,91 @@ export default function HomeScreen() {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-            <HomeHeader 
-                userData={userData}
-                stats={{
-                    decks: homeData.decks.length,
-                    classes: homeData.classes.length,
-                    folders: homeData.folders.length
-                }}
-            />
-
-            <View style={styles.content}>
-                <SubmitButton
-                    text="✨ Generate New Flashcards with AI ✨"
-                    onPress={() => console.log("AI Flashcard button pressed")}
-                    style={styles.buttonShadow}
-                    textStyle={{ fontSize: 15 }}
+        <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'left']}>
+            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+                <HomeHeader 
+                    userData={userData}
+                    stats={{
+                        decks: safeHomeData.decks?.length || 0,
+                        classes: safeHomeData.classes?.length || 0,
+                        folders: safeHomeData.folders?.length || 0
+                    }}
                 />
 
-                <Text style={styles.sectionTitle}>Your Decks</Text>
-                <ContentCarousel
-                    items={homeData.decks}
-                    type="deck"
-                    selectedIndex={selectedDeckIndex}
-                    onScroll={(event) => handleScroll(event, setSelectedDeckIndex)}
-                    onPressItem={navigateToDeckDetail}
-                />
-
-                <Text style={styles.sectionTitle}>Your Classes</Text>
-                <ContentCarousel
-                    items={homeData.classes}
-                    type="class"
-                    selectedIndex={selectedClassIndex}
-                    onScroll={(event) => handleScroll(event, setSelectedClassIndex)}
-                    onPressItem={navigateToClassDetail}
-                />
-
-                <Text style={styles.sectionTitle}>Your Folders</Text>
-                <ContentCarousel
-                    items={homeData.folders}
-                    type="folder"
-                    selectedIndex={selectedFolderIndex}
-                    onScroll={(event) => handleScroll(event, setSelectedFolderIndex)}
-                    onPressItem={navigateToFolderDetail}
-                />
-
-                <Text style={styles.sectionTitle}>Your Progress Chart</Text>
-                <View style={styles.chartContainer}>
-                    <PieChart
-                        data={userData.progress.map((item) => ({
-                            name: item.name,
-                            population: item.percentage,
-                            color: item.color,
-                            legendFontColor: item.legendFontColor,
-                            legendFontSize: item.legendFontSize,
-                        }))}
-                        width={170}
-                        height={170}
-                        chartConfig={{
-                            backgroundGradientFrom: "#fff",
-                            backgroundGradientTo: "#fff",
-                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            decimalPlaces: 0,
-                        }}
-                        accessor="population"
-                        backgroundColor="transparent"
-                        paddingLeft="50"
-                        absolute
-                        style={{ alignSelf: "center" }}
-                        hasLegend={false}
+                <View style={styles.content}>
+                    <SubmitButton
+                        text="✨ Generate New Flashcards with AI ✨"
+                        onPress={() => console.log("AI Flashcard button pressed")}
+                        style={styles.buttonShadow}
+                        textStyle={{ fontSize: 15 }}
                     />
-                    <PieLegend data={userData.progress} />
+
+                    <Text style={styles.sectionTitle}>Your Decks</Text>
+                    <ContentCarousel
+                        items={safeHomeData.decks || []}
+                        type="deck"
+                        selectedIndex={selectedDeckIndex}
+                        onScroll={(event) => handleScroll(event, setSelectedDeckIndex)}
+                        onPressItem={navigateToDeckDetail}
+                    />
+
+                    <Text style={styles.sectionTitle}>Your Classes</Text>
+                    <ContentCarousel
+                        items={safeHomeData.classes || []}
+                        type="class"
+                        selectedIndex={selectedClassIndex}
+                        onScroll={(event) => handleScroll(event, setSelectedClassIndex)}
+                        onPressItem={navigateToClassDetail}
+                    />
+
+                    <Text style={styles.sectionTitle}>Your Folders</Text>
+                    <ContentCarousel
+                        items={safeHomeData.folders || []}
+                        type="folder"
+                        selectedIndex={selectedFolderIndex}
+                        onScroll={(event) => handleScroll(event, setSelectedFolderIndex)}
+                        onPressItem={navigateToFolderDetail}
+                    />
+
+                    <Text style={styles.sectionTitle}>Your Progress Chart</Text>
+                    <View style={styles.chartContainer}>
+                        <PieChart
+                            data={userData.progress.map((item) => ({
+                                name: item.name,
+                                population: item.percentage,
+                                color: item.color,
+                                legendFontColor: item.legendFontColor,
+                                legendFontSize: item.legendFontSize,
+                            }))}
+                            width={170}
+                            height={170}
+                            chartConfig={{
+                                backgroundGradientFrom: "#fff",
+                                backgroundGradientTo: "#fff",
+                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                decimalPlaces: 0,
+                            }}
+                            accessor="population"
+                            backgroundColor="transparent"
+                            paddingLeft="50"
+                            absolute
+                            style={{ alignSelf: "center" }}
+                            hasLegend={false}
+                        />
+                        <PieLegend data={userData.progress} />
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: "#fff",
+    },
     container: {
         backgroundColor: "#fff",
         paddingHorizontal: 15,

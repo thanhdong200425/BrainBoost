@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Trophy, X } from 'lucide-react-native';
-import SubmitButton from '../components/buttons/SubmitButton'; 
+import SubmitButton from '../../components/buttons/SubmitButton'; 
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const shuffleArray = (array) => {
     const arr = [...array];
@@ -31,17 +32,17 @@ const ResultLearnScreen = () => {
         const shuffled = shuffleArray(parsed);
 
         router.replace({
-            pathname: '/learn',
+            pathname: '/learning/learn',
             params: { shuffledFlashcards: JSON.stringify(shuffled) },
         });
     };
 
     const handleTakeTest = () => {
-        router.push('/test');
+        router.push('/learning/test');
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
             <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => router.back()}
@@ -77,13 +78,20 @@ const ResultLearnScreen = () => {
             />
 
 
-        </View>
+        </SafeAreaView>
     );
 };
 
 export default ResultLearnScreen;
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#FFF',
+        paddingHorizontal: 24,
+        paddingTop: 60,
+        alignItems: 'center',
+    },
     container: {
         flex: 1,
         backgroundColor: '#FFF',

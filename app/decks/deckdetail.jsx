@@ -11,9 +11,10 @@ import {
     Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FlashcardFlipCarousel } from '../components';
-import { getDeckById } from '../services/deckService';
+import { FlashcardFlipCarousel } from '../../components';
+import { getDeckById } from '../../services/deckService';
 import { useQuery } from '@tanstack/react-query';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DeckDetailScreen = () => {
     const router = useRouter();
@@ -32,7 +33,7 @@ const DeckDetailScreen = () => {
 
     const handleZoom = (item) => {
         router.push({
-            pathname: '/flashcard',
+            pathname: '/learning/flashcard',
             params: {
                 flashcards: JSON.stringify([item]),
                 deckName: deck.name,
@@ -42,7 +43,7 @@ const DeckDetailScreen = () => {
 
     const navigateToFlashcards = () => {
         router.push({
-            pathname: '/flashcard',
+            pathname: '/learning/flashcard',
             params: {
                 flashcards: JSON.stringify(deck.flashcards),
                 deckName: deck.name,
@@ -52,7 +53,7 @@ const DeckDetailScreen = () => {
 
     const navigateToLearn = () => {
         router.push({
-           pathname: "/learn", 
+           pathname: "/learning/learn", 
             params: { 
                 flashcards: JSON.stringify(deck.flashcards), 
                 deckName: deck.name,
@@ -65,7 +66,7 @@ const DeckDetailScreen = () => {
 
     const navigateToTestScreen = () => {
         router.push({
-            pathname: '/test',
+            pathname: '/learning/test',
             params: {
                 flashcards: JSON.stringify(deck.flashcards),
                 deckName: deck.name,
@@ -75,25 +76,25 @@ const DeckDetailScreen = () => {
 
     if (isLoading) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
+            <SafeAreaView style={[styles.safeArea, styles.centerContent]}>
                 <ActivityIndicator size="large" color="#3D5CFF" />
-            </View>
+            </SafeAreaView>
         );
     }
 
     if (isError) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
+            <SafeAreaView style={[styles.safeArea, styles.centerContent]}>
                 <Text style={styles.errorText}>Error loading deck: {error.message}</Text>
                 <TouchableOpacity style={styles.button} onPress={() => router.back()}>
                     <Text style={styles.buttonText}>Go Back</Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="dark-content" />
 
             {/* Header */}
@@ -123,7 +124,7 @@ const DeckDetailScreen = () => {
                     <TouchableOpacity style={styles.navButton} onPress={navigateToFlashcards}>
                         <View style={styles.iconBackground}>
                             <Image
-                                source={require('../assets/images/flashcard.png')}
+                                source={require('../../assets/images/flashcard.png')}
                                 style={styles.navIcon}
                                 resizeMode="contain"
                             />
@@ -134,7 +135,7 @@ const DeckDetailScreen = () => {
                     <TouchableOpacity style={styles.navButton} onPress={navigateToLearn}>
                         <View style={[styles.iconBackground, styles.learnBackground]}>
                             <Image
-                                source={require('../assets/images/learn.png')}
+                                source={require('../../assets/images/learn.png')}
                                 style={styles.navIcon}
                                 resizeMode="contain"
                             />
@@ -145,7 +146,7 @@ const DeckDetailScreen = () => {
                     <TouchableOpacity style={styles.navButton} onPress={navigateToTestScreen}>
                         <View style={[styles.iconBackground, styles.testBackground]}>
                             <Image
-                                source={require('../assets/images/test.png')}
+                                source={require('../../assets/images/test.png')}
                                 style={styles.navIcon}
                                 resizeMode="contain"
                             />
@@ -238,11 +239,15 @@ const DeckDetailScreen = () => {
                     ))}
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#F8F9FD',
+    },
     container: { flex: 1, backgroundColor: '#F8F9FD' },
     header: {
         flexDirection: 'row',

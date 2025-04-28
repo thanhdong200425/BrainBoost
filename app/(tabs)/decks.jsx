@@ -3,9 +3,10 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-nativ
 import { Ionicons } from "@expo/vector-icons";
 import { DeckCard, SubmitButton } from "../../components";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAllDecks, deleteDeck } from "../../services/deckService";
+import { getAllDecks, deleteDeck, getFlashcardsById } from "../../services/deckService";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DecksScreen() {
   const router = useRouter();
@@ -44,20 +45,29 @@ export default function DecksScreen() {
   });
 
   const handleDeckPress = (deckId) => {
-    router.push({ pathname: '/deckdetail', params: { id: deckId } });
+    router.push({ pathname: '/decks/deckdetail', params: { id: deckId } });
   };
 
-  const handleDeckEdit = (deck) => {
-    router.push({ 
-      pathname: '/editdeck', 
-      params: { 
-        id: deck.id,
-        deckData: JSON.stringify(deck)
-      } 
-    });
-  };
+  const handleDeckEdit = async (deck) => {
+    try {
+      const flashcards = queryClient.fetchQuery({
+        queryKey: ['flashcards', deck.id],
+        queryFn: () => getFlashcardsById(deck.id)
+      })
 
-  const handleCreateNewSet = () => router.push('/adddeck');
+      router.push({ pathname: '/decks/editdeck', params: { id: deck.id, deckData: JSON.stringify(deck), flashcardData: JSON.stringify(flashcards)} });
+    } catch (error) {
+      console.error("Error fetching flashcards:", error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to fetch flashcards',
+        text2: error.message || 'Please try again later',
+        position: 'top'
+      });
+    }
+  }
+
+  const handleCreateNewSet = () => router.push('/decks/adddeck');
   
   const handleDeckDelete = (deckId) => {
     deleteMutation.mutate(deckId);
@@ -65,50 +75,60 @@ export default function DecksScreen() {
 
   // Loading and error states
   if (isLoading) return (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#3D5CFF" />
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3D5CFF" />
+      </View>
+    </SafeAreaView>
   );
 
   if (isError) return (
-    <View style={styles.loadingContainer}>
-      <Text style={styles.errorText}>Error loading decks: {error.message}</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.errorText}>Error loading decks: {error.message}</Text>
+      </View>
+    </SafeAreaView>
   );
 
   return (
-    <View style={styles.container}>
-      <SubmitButton
-        onPress={handleCreateNewSet} 
-        text="Create New Set"
-        style={styles.createButton}
-        textStyle={styles.createButtonText}
-        icon={<Text><Ionicons name="add-circle-outline" size={22} color="#fff" /></Text>}
-      />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <SubmitButton
+          onPress={handleCreateNewSet} 
+          text="Create New Set"
+          style={styles.createButton}
+          textStyle={styles.createButtonText}
+          icon={<Text><Ionicons name="add-circle-outline" size={22} color="#fff" /></Text>}
+        />
 
-      <Text style={styles.header}>Your Decks</Text> 
-      <FlatList
-        data={data?.decks || []} 
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <DeckCard
-            name={item.name}
-            description={item.description}
-            visibility={item.visibility}
-            updatedAt={item.updatedAt}
-            onPress={() => handleDeckPress(item.id)}
-            onEdit={() => handleDeckEdit(item)}
-            onDelete={() => handleDeckDelete(item.id)}
-          />
-        )}
-        contentContainerStyle={styles.listContentContainer}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+        <Text style={styles.header}>Your Decks</Text> 
+        <FlatList
+          data={data?.decks || []} 
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <DeckCard
+              name={item.name}
+              description={item.description}
+              visibility={item.visibility}
+              updatedAt={item.updatedAt}
+              onPress={() => handleDeckPress(item.id)}
+              onEdit={() => handleDeckEdit(item)}
+              onDelete={() => handleDeckDelete(item.id)}
+            />
+          )}
+          contentContainerStyle={styles.listContentContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   container: {
     paddingHorizontal: 20,
     backgroundColor: "#fff",

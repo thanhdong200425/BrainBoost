@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { PairInput, SubmitButton } from '../components'; 
+import { PairInput, SubmitButton } from '../../components'; 
 import Toast from 'react-native-toast-message';
-import { updateDeck, createFlashcards, updateFlashcard, getFlashcardsById } from '../services/deckService';
+import { updateDeck, createFlashcards, updateFlashcard, getFlashcardsById } from '../../services/deckService';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
 
 const EditDeckScreen = () => {
     const router = useRouter();
-    const { id, deckData } = useLocalSearchParams();
+    const { id, deckData, existingFlashcard } = useLocalSearchParams();
     const queryClient = useQueryClient();
     const parsedDeckData = deckData ? JSON.parse(deckData) : null;
     
@@ -25,15 +25,10 @@ const EditDeckScreen = () => {
         return null;
     }
 
-    const { data: existingFlashcards } = useQuery({
-        queryKey: ['flashcards', id],
-        queryFn: () => getFlashcardsById(id)
-    });
-
     
     const [flashcards, setFlashcards] = useState(() => {
-        if (existingFlashcards?.length > 0) {
-            return existingFlashcards.map(card => ({
+        if (existingFlashcard?.length > 0) {
+            return existingFlashcard.map(card => ({
                 id: card.id,
                 term: card.frontText || card.term || '',
                 definition: card.backText || card.definition || '',
@@ -47,7 +42,8 @@ const EditDeckScreen = () => {
         defaultValues: {
             title: parsedDeckData?.name || '',
             description: parsedDeckData?.description || '',
-            visibility: parsedDeckData?.visibility || 'public'
+            visibility: parsedDeckData?.visibility || 'public',
+            flashcards: flashcards
         }
     });
     
@@ -106,7 +102,7 @@ const EditDeckScreen = () => {
     });
 
     // Track pending operations
-    const [pendingOperations, setPendingOperations] = useState(0);
+    const [setPendingOperations] = useState(0);
 
     const processFlashcards = () => {
         const validFlashcards = flashcards.filter(card => 
@@ -167,7 +163,7 @@ const EditDeckScreen = () => {
         queryClient.invalidateQueries({ queryKey: ['homeData'] });
         queryClient.invalidateQueries({ queryKey: ['deck', id] });
         
-        router.push('/decks');
+        router.push('/decks/deckdetail');
     };
 
     const onSubmit = (data) => {
@@ -206,13 +202,13 @@ const EditDeckScreen = () => {
     // Check if any flashcards have changes
     const hasFlashcardChanges = () => {
         // Check if flashcards array length is different
-        if (!existingFlashcards || flashcards.length !== existingFlashcards.length) 
+        if (!existingFlashcard || flashcards.length !== existingFlashcard.length) 
             return true;
             
         // Check for changes in existing flashcards
         const existingCards = flashcards.filter(card => !card.isNew);
         for (const card of existingCards) {
-            const originalCard = existingFlashcards.find(
+            const originalCard = existingFlashcard.find(
                 origCard => origCard.id === card.id
             );
             

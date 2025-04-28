@@ -4,10 +4,11 @@ import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
-import { signIn } from "../services/authService";
-import { setCredentials } from "../redux/slices/authSlice";
-import { TextField, PasswordField, DividerWithText, ThirdPartyContainer, ThirdPartyButton, SubmitButton, OtherOption, Logo } from "../components";
+import { signIn } from "../../services/authService";
+import { setCredentials } from "../../redux/slices/authSlice";
+import { TextField, PasswordField, DividerWithText, ThirdPartyContainer, ThirdPartyButton, SubmitButton, OtherOption, Logo } from "../../components";
 import Toast from 'react-native-toast-message';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -55,48 +56,54 @@ export default function LoginScreen() {
         mutation.mutate({email, password})
     };
 
-    const navigateToSignUp = () => router.push("/signup");
+    const navigateToSignUp = () => router.push("/auth/signup");
 
     return (
-        <View style={styles.container}>
-            <View style={styles.content}>
-                <Text style={styles.title}>Log In</Text>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View style={styles.content}>
+                    <Text style={styles.title}>Log In</Text>
 
-                <TextField label="Your Email" value={email} onChangeText={setEmail} placeholder="Enter your email" keyboardType="email-address" autoCapitalize="none" isEmail={true} />
+                    <TextField label="Your Email" value={email} onChangeText={setEmail} placeholder="Enter your email" keyboardType="email-address" autoCapitalize="none" isEmail={true} />
 
-                <PasswordField
-                    label="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="Enter your password"
-                    isPasswordVisible={isPasswordVisible}
-                    togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
-                />
+                    <PasswordField
+                        label="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="Enter your password"
+                        isPasswordVisible={isPasswordVisible}
+                        togglePasswordVisibility={() => setIsPasswordVisible(!isPasswordVisible)}
+                    />
 
-                <TouchableOpacity style={styles.forgotPassword}>
-                    <Text style={styles.forgotPasswordText}>Forget password?</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.forgotPassword}>
+                        <Text style={styles.forgotPasswordText}>Forget password?</Text>
+                    </TouchableOpacity>
 
-                <SubmitButton text="Log In" onPress={handleLogin} style={styles.loginButton} textStyle={styles.loginText} />
+                    <SubmitButton text="Log In" onPress={handleLogin} style={styles.loginButton} textStyle={styles.loginText} />
 
-                <OtherOption textContent={"Don't have an account?"} linkContent={"Sign up"} onPress={navigateToSignUp} />
+                    <OtherOption textContent={"Don't have an account?"} linkContent={"Sign up"} onPress={navigateToSignUp} />
 
-                <DividerWithText text="Or login with" />
+                    <DividerWithText text="Or login with" />
 
-                <ThirdPartyContainer>
-                    <ThirdPartyButton iconName="logo-google" size={40}>
-                        <Logo logoType="google" size={40} />
-                    </ThirdPartyButton>
-                    <ThirdPartyButton iconName="logo-facebook" size={40}>
-                        <Logo logoType="facebook" size={40} />
-                    </ThirdPartyButton>
-                </ThirdPartyContainer>
+                    <ThirdPartyContainer>
+                        <ThirdPartyButton iconName="logo-google" size={40}>
+                            <Logo logoType="google" size={40} />
+                        </ThirdPartyButton>
+                        <ThirdPartyButton iconName="logo-facebook" size={40}>
+                            <Logo logoType="facebook" size={40} />
+                        </ThirdPartyButton>
+                    </ThirdPartyContainer>
+                </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: "#F7F7F7",
+    },
     container: {
         flex: 1,
         alignItems: "center",
