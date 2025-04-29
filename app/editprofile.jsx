@@ -6,10 +6,11 @@ import FormFieldEdit from '../components/containers/FormFieldEdit';
 import { useRouter } from "expo-router";
 import serverApi from '../helpers/axios';
 import * as ImagePicker from 'expo-image-picker'
+import Toast from 'react-native-toast-message';
+import { getProfile, updateProfile, updateAvatar } from '../services/profileService';
 
 export default function EditProfile() {
     const router = useRouter()
-
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,21 +19,21 @@ export default function EditProfile() {
         username: '',
         email: '',
         dob: '',
+        avatar_url: ''
     });
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await serverApi.get('/api/profile');
-                const userData = response.data.data;
+                const userData = await getProfile();
                 setUser(userData);
-                setFormData(prev => ({
-                    ...prev,
+                setFormData({
                     username: userData.username || '',
                     email: userData.email || '',
                     dob: userData.dob || '',
-                }));
-                setLoading(false)
+                    avatar_url: userData.avatar_url || '',
+                });
+                setLoading(false);
             } catch (err) {
                 setError(err.message || 'Failed to fetch profile. Please try again.');
                 setLoading(false);
@@ -51,23 +52,71 @@ export default function EditProfile() {
 
     const handleUpdateProfile = async () => {
         try {
-            const { username, dob, avatar_url } = formData;
+            const { username, email, dob } = formData;
+            const updatedUser = await updateProfile({ username, email, dob });
+            setUser(updatedUser);
+            Toast.show({
+                type: 'success',
+                text1: 'Profile Updated',
+                text2: 'Your profile has been updated successfully!',
+                position: 'top',
+            });
+            router.replace('/(tabs)/profile');
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Update Error',
+                text2: error.message || 'Failed to update profile. Please try again.',
+                position: 'top',
+            });
+        }
+    };
 
-            console.log('formData:', formData);
-            const response = await serverApi.put('/api/profile', {
-                username,
-                dob,
-                avatar_url,
+    const handleUpdateAvatar = async () => {
+        try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Permission Denied',
+                    text2: 'Permission to access media library is required.',
+                    position: 'top',
+                });
+                return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 1,
+                allowsEditing: true,
+                aspect: [1, 1],
             });
 
-            if (response.status === 200) {
-                alert('Profile updated successfully!');
-            } else {
-                alert('Failed to update profile.');
+            if (result.canceled) {
+                return;
             }
+
+            const imageUri = result.assets[0].uri;
+            const updatedUser = await updateAvatar(imageUri);
+            setUser(updatedUser);
+            setFormData(prev => ({
+                ...prev,
+                avatar_url: updatedUser.avatar_url,
+            }));
+            Toast.show({
+                type: 'success',
+                text1: 'Avatar Updated',
+                text2: 'Your avatar has been updated successfully!',
+                position: 'top',
+            });
+            router.replace('/(tabs)/profile');
         } catch (error) {
-            console.error("Update error:", error?.response?.data || error.message);
-            alert('Failed to update profile. Please try again later.');
+            Toast.show({
+                type: 'error',
+                text1: 'Avatar Update Error',
+                text2: error.message || 'Failed to update avatar. Please try again.',
+                position: 'top',
+            });
         }
     };
 
@@ -100,51 +149,6 @@ export default function EditProfile() {
             </SafeAreaView>
         );
     }
-
-    const handleUpdateAvatar = async () => {
-        try {
-            // Xin quyền truy cập thư viện ảnh
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== 'granted') {
-                alert('Permission to access media library is required')
-                return
-            }
-
-            // Open thu vien anh
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                quality: 1,
-                allowsEditing: true,
-                aspect: [1, 1]
-            })
-
-            if (result.canceled) {
-                console.log('User cancelled image picker');
-                return;
-            }
-
-            const imageUri = result.assets[0].uri;
-
-            const response = await serverApi.put(
-                '/api/profile',
-                { avatar_url: imageUri },
-            );
-
-            const updatedUser = response.data.data;
-
-            setUser(updatedUser);
-            setFormData((prev) => ({
-                ...prev,
-                avatar_url: updatedUser.avatar_url,
-            }));
-
-            console.log('Avatar updated:', response.data.data);
-            router.replace('/(tabs)/profile')
-        } catch (err) {
-            console.error('Update avatar error:', err);
-            setError(err.message || 'Failed to update avatar.');
-        }
-    };
 
     return (
         <SafeAreaView style={styles.safeContainer}>

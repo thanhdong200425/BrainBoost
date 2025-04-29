@@ -7,9 +7,9 @@ import { useRouter } from "expo-router";
 import StatItem from "../../components/containers/StatItem";
 import ProgressBar from "../../components/containers/ProgressBar";
 import InviteFriends from "../../components/footer/InviteFriends";
+import { getProfile } from "../../services/profileService";
 
 export default function ProfileScreen() {
-    // Nháp
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -18,8 +18,8 @@ export default function ProfileScreen() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await serverApi.get('/api/profile');
-                setUser(response.data.data);
+                const userData = await getProfile();
+                setUser(userData);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || 'Failed to fetch profile. Please try again.');
@@ -32,7 +32,7 @@ export default function ProfileScreen() {
 
     // Du lieu tinh cho giao dien
     const userData = {
-        role: "UX/UI Designer",
+        role: "UX/UX Designer",
         hoursSpent: "14h 9m",
         progress: {
             total: 161,
