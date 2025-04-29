@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { FlashcardFlipCarousel } from "../components";
+import { FlashcardFlipCarousel } from "../../components";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const FlashcardScreen = () => {
   const router = useRouter();
@@ -21,34 +22,40 @@ const FlashcardScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header with Back Button and Title */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.title}>{deckName || 'Flashcards'}</Text>
-        <View style={{width: 24}} />
-      </View>
-
-      {/* Flashcard Component */}
-      {flashcards.length > 0 ? (
-        <View style={styles.carouselContainer}>
-          <FlashcardFlipCarousel
-            data={flashcards}
-            showIcon={false}
-            cardWidth={400}
-            cardHeight={600}
-          />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Header with Back Button and Title */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+          <Text style={styles.title}>{deckName || 'Flashcards'}</Text>
+          <View style={{width: 24}} />
         </View>
-      ) : (
-        <Text style={styles.noCardsText}>No flashcards available for this deck.</Text>
-      )}
-    </View>
+
+        {/* Flashcard Component */}
+        {flashcards.length > 0 ? (
+          <View style={styles.carouselContainer}>
+            <FlashcardFlipCarousel
+              data={flashcards}
+              showIcon={false}
+              cardWidth={400}
+              cardHeight={600}
+            />
+          </View>
+        ) : (
+          <Text style={styles.noCardsText}>No flashcards available for this deck.</Text>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#F8F9FD",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F8F9FD",

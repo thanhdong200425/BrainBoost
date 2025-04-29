@@ -70,3 +70,13 @@ export const updateFlashcard = async (flashcardId, flashcardData) => {
         throw error;
     }
 };
+
+export const getFlashcardsById = async (deckId) => {
+    try {
+        const response = await serverApi.get(`/api/flashcards/${deckId}`);
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error fetching flashcards for deck ${deckId}:`, error);
+        throw error;
+    }
+};

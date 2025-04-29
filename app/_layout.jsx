@@ -1,11 +1,12 @@
-import { Stack, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { router, Stack } from "expo-router";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import Toast from 'react-native-toast-message';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -14,24 +15,25 @@ const toastConfig = {
 };
 
 export default function RootLayout() {
-    const router = useRouter();
 
-    useEffect(() => {
-        router.push("/onboarding01");
-    }, []);
     return (
-        <GestureHandlerRootView style={styles.container}>
-            <QueryClientProvider client={queryClient}>
-                <Provider store={store}>
+        <SafeAreaProvider>
+            <GestureHandlerRootView style={styles.container}>
+                <QueryClientProvider client={queryClient}>
+                    <Provider store={store}>
                     <Stack screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="onboarding01" />
-                        <Stack.Screen name="signup" />
-                        <Stack.Screen name="login" />
+                        <Stack.Screen name="bottom" />
+                        <Stack.Screen name="onboarding" />
+                        <Stack.Screen name="auth" />
+                        <Stack.Screen name="decks" />
+                        <Stack.Screen name="learning" />
+                        <Stack.Screen name="result" />
                     </Stack>
-                </Provider>
-            </QueryClientProvider>
-            <Toast config={toastConfig} />
-        </GestureHandlerRootView>
+                    </Provider>
+                </QueryClientProvider>
+                <Toast config={toastConfig} />
+            </GestureHandlerRootView>
+        </SafeAreaProvider>
     );
 }
 

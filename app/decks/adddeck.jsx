@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { PairInput, SubmitButton } from '../components'; 
+import { PairInput, SubmitButton } from '../../components'; 
 import Toast from 'react-native-toast-message';
-import { createDeck, createFlashcards } from '../services/deckService';
+import { createDeck, createFlashcards } from '../../services/deckService';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     toggleVisibility,
@@ -12,7 +12,7 @@ import {
     addFlashcardPair,
     deleteFlashcardPair,
     validateDeckData
-} from '../helpers/flashcardUtils';
+} from '../../helpers/flashcardUtils';
 
 const AddDeckScreen = () => {
     const router = useRouter();

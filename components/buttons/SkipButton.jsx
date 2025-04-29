@@ -2,11 +2,15 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router"; 
 
-const SkipButton = ({ hideSkip }) => {
+const SkipButton = ({ hideSkip, onSkip }) => {
   const router = useRouter();  
 
   const handleSkip = () => {
-    router.push("/signup"); 
+    if (onSkip) {
+      onSkip();
+    } else {
+      router.push("/auth/login"); 
+    }
   };
 
   if (hideSkip) return null;  
