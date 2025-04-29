@@ -14,6 +14,8 @@ import FormFieldEdit from '../../components/containers/FormFieldEdit'
 import { useRouter } from 'expo-router'
 import { changePassword } from '../../services/authService'
 import Toast from 'react-native-toast-message'
+import { useForm, Controller } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
 
 const PasswordToggle = ({ show, onToggle }) => (
     <TouchableOpacity onPress={onToggle} style={styles.eyeIcon}>
@@ -23,76 +25,49 @@ const PasswordToggle = ({ show, onToggle }) => (
 
 export default function ChangePassword() {
     const router = useRouter()
-
-    const [formData, setFormData] = useState({
-        current_password: '',
-        new_password: '',
-    })
     const [showPassword, setShowPassword] = useState(false)
-    const [loading, setLoading] = useState(false)
 
-    const togglePasswordVisibility = () => {
-        setShowPassword((prev) => !prev)
-    }
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        defaultValues: {
+            current_password: '',
+            new_password: '',
+        },
+    })
 
-    const handleChange = (name, value) => {
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }))
-    }
-
-    const validateForm = () => {
-        const { current_password, new_password } = formData
-
-        if (!current_password || !new_password) {
-            Toast.show({
-                type: 'error',
-                text1: 'Validation Error',
-                text2: 'Please fill in both current password and new password.',
-            })
-            return false
-        }
-
-        const passwordRegex =
-            /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/
-        if (!passwordRegex.test(new_password)) {
-            Toast.show({
-                type: 'error',
-                text1: 'Weak Password',
-                text2: 'Password must be at least 8 characters, include a number and a special character.',
-            })
-            return false
-        }
-        return true
-    }
-
-    const handleUpdatePassword = async () => {
-        if (!validateForm()) return
-
-        setLoading(true)
-        try {
-            const { current_password, new_password } = formData
-            await changePassword(current_password, new_password)
-
+    const changePasswordMutation = useMutation({
+        mutationFn: ({ current_password, new_password }) =>
+            changePassword(current_password, new_password),
+        onSuccess: () => {
             Toast.show({
                 type: 'success',
                 text1: 'Success',
                 text2: 'Password updated successfully!',
+                position: 'top',
             })
             router.back()
-        } catch (error) {
-            console.error('Update password error:', error.message)
+        },
+        onError: (error) => {
             Toast.show({
                 type: 'error',
                 text1: 'Update Failed',
                 text2:
                     error.message ||
                     'Failed to update password. Please try again later.',
+                position: 'top',
             })
-        } finally {
-            setLoading(false)
-        }
+        },
+    })
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prev) => !prev)
+    }
+
+    const onSubmit = (data) => {
+        changePasswordMutation.mutate(data)
     }
 
     return (
@@ -107,10 +82,10 @@ export default function ChangePassword() {
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Change Password</Text>
                     <TouchableOpacity
-                        onPress={handleUpdatePassword}
-                        disabled={loading}
+                        onPress={handleSubmit(onSubmit)}
+                        disabled={changePasswordMutation.isPending}
                     >
-                        {loading ? (
+                        {changePasswordMutation.isPending ? (
                             <ActivityIndicator size="small" color="#000" />
                         ) : (
                             <Icon name="check" size={24} color="#000" />
@@ -119,33 +94,66 @@ export default function ChangePassword() {
                 </View>
 
                 <View style={styles.formContainer}>
-                    <FormFieldEdit
-                        label="Current Password"
+                    <Controller
+                        control={control}
                         name="current_password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={formData.current_password}
-                        onChange={handleChange}
-                        suffix={
-                            <PasswordToggle
-                                show={showPassword}
-                                onToggle={togglePasswordVisibility}
+                        rules={{
+                            required: 'Current password is required',
+                        }}
+                        render={({ field: { onChange, value } }) => (
+                            <FormFieldEdit
+                                label="Current Password"
+                                name="current_password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={value}
+                                onChange={(_, value) => onChange(value)}
+                                suffix={
+                                    <PasswordToggle
+                                        show={showPassword}
+                                        onToggle={togglePasswordVisibility}
+                                    />
+                                }
                             />
-                        }
+                        )}
                     />
+                    {errors.current_password && (
+                        <Text style={styles.errorMessage}>
+                            {errors.current_password.message}
+                        </Text>
+                    )}
 
-                    <FormFieldEdit
-                        label="New Password"
+                    <Controller
+                        control={control}
                         name="new_password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={formData.new_password}
-                        onChange={handleChange}
-                        suffix={
-                            <PasswordToggle
-                                show={showPassword}
-                                onToggle={togglePasswordVisibility}
+                        rules={{
+                            required: 'New password is required',
+                            pattern: {
+                                value: /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/,
+                                message:
+                                    'Password must be at least 8 characters, include a number and a special character.',
+                            },
+                        }}
+                        render={({ field: { onChange, value } }) => (
+                            <FormFieldEdit
+                                label="New Password"
+                                name="new_password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={value}
+                                onChange={(_, value) => onChange(value)}
+                                suffix={
+                                    <PasswordToggle
+                                        show={showPassword}
+                                        onToggle={togglePasswordVisibility}
+                                    />
+                                }
                             />
-                        }
+                        )}
                     />
+                    {errors.new_password && (
+                        <Text style={styles.errorMessage}>
+                            {errors.new_password.message}
+                        </Text>
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -159,6 +167,7 @@ const styles = StyleSheet.create({
     },
     container: {
         padding: 20,
+        paddingTop: 0,
         paddingBottom: 80,
     },
     header: {
@@ -177,5 +186,12 @@ const styles = StyleSheet.create({
     },
     eyeIcon: {
         padding: 5,
+    },
+    errorMessage: {
+        color: '#ff4d4f',
+        fontSize: 12,
+        marginTop: -15,
+        marginBottom: 15,
+        marginLeft: 5,
     },
 })
