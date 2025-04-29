@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 
 const ProgressBar = ({ current, total }) => {
-    const progress = (current / total) * 100;
+    const progress = (current / total) * 100
 
     return (
         <View style={styles.container}>
@@ -14,10 +14,10 @@ const ProgressBar = ({ current, total }) => {
                 <View style={[styles.barFill, { width: `${progress}%` }]} />
             </View>
         </View>
-    );
-};
+    )
+}
 
-export default ProgressBar;
+export default ProgressBar
 
 const styles = StyleSheet.create({
     container: {
@@ -43,4 +43,4 @@ const styles = StyleSheet.create({
         backgroundColor: '#3D5CFF',
         borderRadius: 10,
     },
-});
+})

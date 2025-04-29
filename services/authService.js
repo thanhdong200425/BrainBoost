@@ -42,6 +42,22 @@ export const signIn = async ({ email, password }) => {
     }
 }
 
+export const changePassword = async (current_password, new_password) => {
+    try {
+        const response = await serverApi.put('/api/change-password', {
+            current_password,
+            new_password,
+        })
+        return response.data
+    } catch (error) {
+        console.error(
+            'Change password service error:',
+            error?.response?.data || error.message,
+        )
+        throw error
+    }
+}
+
 export const fetchAccessToken = async () => {
     try {
         const token = await AsyncStorage.getItem('token')
