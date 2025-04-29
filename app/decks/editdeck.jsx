@@ -1,263 +1,273 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, SafeAreaView, StatusBar } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { PairInput, SubmitButton } from '../../components'; 
-import Toast from 'react-native-toast-message';
-import { updateDeck, createFlashcards, updateFlashcard, getFlashcardsById } from '../../services/deckService';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useState } from 'react'
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+    TextInput,
+    ActivityIndicator,
+    SafeAreaView,
+    StatusBar,
+} from 'react-native'
+import { useRouter, useLocalSearchParams } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import { PairInput, SubmitButton } from '../../components'
+import Toast from 'react-native-toast-message'
+import {
+    updateDeck,
+    createFlashcards,
+    updateFlashcard,
+} from '../../services/deckService'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+import { useForm, Controller } from 'react-hook-form'
 
 const EditDeckScreen = () => {
-    const router = useRouter();
-    const { id, deckData, flashcardData: flashcardDataString } = useLocalSearchParams();
-    const queryClient = useQueryClient();
-    const parsedDeckData = deckData ? JSON.parse(deckData) : null;
-    
-    // Parse flashcardData string
-    let parsedFlashcardData = [];
+    const router = useRouter()
+    const {
+        id,
+        deckData,
+        flashcardData: flashcardDataString,
+    } = useLocalSearchParams()
+    const queryClient = useQueryClient()
+    const parsedDeckData = deckData ? JSON.parse(deckData) : null
+
+    let parsedFlashcardData = []
     try {
         if (flashcardDataString) {
-            parsedFlashcardData = JSON.parse(flashcardDataString);
+            parsedFlashcardData = JSON.parse(flashcardDataString)
         }
     } catch (e) {
-        console.error("Error parsing flashcardData:", e);
+        console.log('Error parsing flashcardData:', e)
         Toast.show({
             type: 'error',
             text1: 'Error loading flashcards',
             text2: 'Could not parse flashcard data.',
-            position: 'top'
-        });
+        })
     }
 
     if (!parsedDeckData) {
-        router.back();
+        router.back()
         Toast.show({
             type: 'error',
             text1: 'Error',
             text2: 'No deck data provided',
-            position: 'top'
-        });
-        return null;
+        })
+        return null
     }
 
-    
     const [flashcards, setFlashcards] = useState(() => {
-        // Use the parsed data here
         if (parsedFlashcardData && parsedFlashcardData.length > 0) {
-            return parsedFlashcardData.map(card => ({
+            return parsedFlashcardData.map((card) => ({
                 id: card.id,
                 term: card.frontText || card.term || '',
                 definition: card.backText || card.definition || '',
-                isNew: false
-            }));
+                isNew: false,
+            }))
         }
-        return [{ id: Date.now(), term: '', definition: '', isNew: true }];
-    });
-    
-    const { control, handleSubmit, setValue, formState: { isDirty, errors } } = useForm({
+        return [{ id: Date.now(), term: '', definition: '', isNew: true }]
+    })
+
+    const {
+        control,
+        handleSubmit,
+        setValue,
+        formState: { isDirty, errors },
+    } = useForm({
         defaultValues: {
             title: parsedDeckData?.name || '',
             description: parsedDeckData?.description || '',
             visibility: parsedDeckData?.visibility || 'public',
-            flashcards: flashcards
-        }
-    });
-    
+            flashcards: flashcards,
+        },
+    })
+
     // Update deck mutation
     const updateDeckMutation = useMutation({
         mutationFn: (deckData) => updateDeck(id, deckData),
         onSuccess: () => {
-            processFlashcards();
+            processFlashcards()
         },
         onError: (error) => {
-            console.error('Error updating deck:', error);
-            
+            console.log('Error updating deck:', error)
+
             if (error.message && error.message.includes('permission')) {
                 Toast.show({
                     type: 'error',
                     text1: 'Permission Denied',
                     text2: 'You can only edit decks that you have created.',
-                    position: 'top'
-                });
+                })
             } else {
                 Toast.show({
                     type: 'error',
                     text1: 'Failed to update deck',
                     text2: error.message || 'Please try again later',
-                    position: 'top'
-                });
+                })
             }
-        }
-    });
+        },
+    })
 
     // Update flashcard mutation
     const updateFlashcardMutation = useMutation({
         mutationFn: (flashcardData) => {
             return updateFlashcard(flashcardData.id, {
                 term: flashcardData.term,
-                definition: flashcardData.definition
-            });
-        }
-    });
+                definition: flashcardData.definition,
+            })
+        },
+        onError: (error) => {
+            console.log('Error updating flashcard:', error)
+            Toast.show({
+                type: 'error',
+                text1: 'Failed to update flashcards',
+                text2: error.message || 'Please try again later',
+            })
+        },
+    })
 
     // Create flashcards mutation
     const createFlashcardsMutation = useMutation({
         mutationFn: (data) => createFlashcards(id, data),
         onSuccess: () => {
-            showSuccessAndNavigate();
+            showSuccessAndNavigate()
         },
         onError: (error) => {
-            console.error('Error creating flashcards:', error);
+            console.log('Error creating flashcards:', error)
             Toast.show({
                 type: 'error',
                 text1: 'Failed to add new flashcards',
                 text2: error.message || 'Please try again later',
-                position: 'top'
-            });
-        }
-    });
+            })
+        },
+    })
 
-    // Track pending operations
-    const [setPendingOperations] = useState(0);
+    const processFlashcards = async () => {
+        const validFlashcards = flashcards.filter(
+            (card) => card.term.trim() !== '' && card.definition.trim() !== '',
+        )
 
-    const processFlashcards = () => {
-        const validFlashcards = flashcards.filter(card => 
-            card.term.trim() !== '' && card.definition.trim() !== ''
-        );
-        
-        const existingCards = validFlashcards.filter(card => !card.isNew);
-        const newCards = validFlashcards.filter(card => card.isNew);
-        
-        // Process existing cards
+        const existingCards = validFlashcards.filter((card) => !card.isNew)
+        const newCards = validFlashcards.filter((card) => card.isNew)
+
         if (existingCards.length > 0) {
-            setPendingOperations(existingCards.length);
-            
-            existingCards.forEach(card => {
-                updateFlashcardMutation.mutate(card, {
-                    onSuccess: () => {
-                        setPendingOperations(prev => {
-                            const newCount = prev - 1;
-                            if (newCount === 0 && newCards.length === 0) {
-                                showSuccessAndNavigate();
-                            }
-                            return newCount;
-                        });
-                    },
-                    onError: (error) => {
-                        console.error('Error updating flashcard:', error);
-                        Toast.show({
-                            type: 'error',
-                            text1: 'Failed to update some flashcards',
-                            text2: error.message || 'Please try again later',
-                            position: 'top'
-                        });
-                    }
-                });
-            });
+            try {
+                await Promise.all(
+                    existingCards.map((card) =>
+                        updateFlashcardMutation.mutateAsync(card),
+                    ),
+                )
+            } catch (error) {
+                return
+            }
         }
-        
-        // Process new cards
+
         if (newCards.length > 0) {
-            createFlashcardsMutation.mutate(newCards);
+            createFlashcardsMutation.mutate(newCards)
+        } else {
+            showSuccessAndNavigate()
         }
-        
-        // If no cards to process, show success
-        if (existingCards.length === 0 && newCards.length === 0) {
-            showSuccessAndNavigate();
-        }
-    };
+    }
 
     const showSuccessAndNavigate = () => {
         Toast.show({
             type: 'success',
             text1: 'Deck updated successfully!',
-            position: 'top'
-        });
-        
-        // Invalidate queries to refresh data
-        queryClient.invalidateQueries({ queryKey: ['decks'] });
-        queryClient.invalidateQueries({ queryKey: ['homeData'] });
-        queryClient.invalidateQueries({ queryKey: ['deck', id] });
-        
-        router.push('/decks/deckdetail');
-    };
+            position: 'top',
+        })
+
+        queryClient.invalidateQueries({ queryKey: ['decks'] })
+        queryClient.invalidateQueries({ queryKey: ['homeData'] })
+        queryClient.invalidateQueries({ queryKey: ['deck', id] })
+
+        router.push({ pathname: '/decks/deckdetail', params: { id } })
+    }
 
     const onSubmit = (data) => {
         updateDeckMutation.mutate({
             name: data.title,
             description: data.description,
-            visibility: data.visibility
-        });
-    };
+            visibility: data.visibility,
+        })
+    }
 
     // Flashcard handlers
     const handleFlashcardChange = (id, field, value) => {
-        setFlashcards(prev => prev.map(card => 
-            card.id === id 
-                ? { ...card, [field]: value }
-                : card
-        ));
-    };
+        setFlashcards((prev) =>
+            prev.map((card) =>
+                card.id === id ? { ...card, [field]: value } : card,
+            ),
+        )
+    }
 
     const addFlashcardPair = () => {
-        setFlashcards(prev => [
+        setFlashcards((prev) => [
             ...prev,
-            { id: Date.now(), term: '', definition: '', isNew: true }
-        ]);
-    };
+            { id: Date.now(), term: '', definition: '', isNew: true },
+        ])
+    }
 
     const deleteFlashcardPair = (id) => {
-        setFlashcards(prev => prev.filter(card => card.id !== id));
-    };
+        setFlashcards((prev) => prev.filter((card) => card.id !== id))
+    }
 
-    const isSubmitting = 
-        updateDeckMutation.isPending || 
-        updateFlashcardMutation.isPending || 
-        createFlashcardsMutation.isPending;
-    
+    const isSubmitting =
+        updateDeckMutation.isPending ||
+        updateFlashcardMutation.isPending ||
+        createFlashcardsMutation.isPending
+
     // Check if any flashcards have changes
     const hasFlashcardChanges = () => {
         // Use the parsed data here as well
-        const originalFlashcards = parsedFlashcardData || [];
-        
+        const originalFlashcards = parsedFlashcardData || []
+
         // Check if flashcards array length is different
-        if (flashcards.length !== originalFlashcards.length) 
-            return true;
-            
+        if (flashcards.length !== originalFlashcards.length) return true
+
         // Check for changes in existing flashcards
-        const existingCards = flashcards.filter(card => !card.isNew);
+        const existingCards = flashcards.filter((card) => !card.isNew)
         for (const card of existingCards) {
             const originalCard = originalFlashcards.find(
-                origCard => origCard.id === card.id
-            );
-            
-            const originalTerm = originalCard ? (originalCard.frontText || originalCard.term || '') : '';
-            const originalDefinition = originalCard ? (originalCard.backText || originalCard.definition || '') : '';
-            
-            if (!originalCard || 
-                card.term !== originalTerm || 
-                card.definition !== originalDefinition) {
-                return true;
+                (origCard) => origCard.id === card.id,
+            )
+
+            const originalTerm = originalCard
+                ? originalCard.frontText || originalCard.term || ''
+                : ''
+            const originalDefinition = originalCard
+                ? originalCard.backText || originalCard.definition || ''
+                : ''
+
+            if (
+                !originalCard ||
+                card.term !== originalTerm ||
+                card.definition !== originalDefinition
+            ) {
+                return true
             }
         }
-        
+
         // Check if there are any new flashcards with content
         const newCardsWithContent = flashcards.filter(
-            card => card.isNew && (card.term.trim() !== '' || card.definition.trim() !== '')
-        );
-        
-        return newCardsWithContent.length > 0;
-    };
-    
-    const isButtonDisabled = isSubmitting || (!isDirty && !hasFlashcardChanges());
+            (card) =>
+                card.isNew &&
+                (card.term.trim() !== '' || card.definition.trim() !== ''),
+        )
+
+        return newCardsWithContent.length > 0
+    }
+
+    const isButtonDisabled =
+        isSubmitting || (!isDirty && !hasFlashcardChanges())
 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" />
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                <TouchableOpacity
+                    onPress={() => router.back()}
+                    style={styles.backButton}
+                >
                     <Text style={styles.iconContainer}>
                         <Ionicons name="arrow-back" size={24} color="#333" />
                     </Text>
@@ -275,7 +285,10 @@ const EditDeckScreen = () => {
                         name="title"
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
-                                style={[styles.input, errors.title && styles.inputError]}
+                                style={[
+                                    styles.input,
+                                    errors.title && styles.inputError,
+                                ]}
                                 placeholder="Enter deck title"
                                 value={value}
                                 onChangeText={onChange}
@@ -284,10 +297,12 @@ const EditDeckScreen = () => {
                         )}
                     />
                     {errors.title && (
-                        <Text style={styles.errorText}>{errors.title.message}</Text>
+                        <Text style={styles.errorText}>
+                            {errors.title.message}
+                        </Text>
                     )}
                 </View>
-                
+
                 <View style={styles.inputGroup}>
                     <Text style={styles.inputLabel}>Description</Text>
                     <Controller
@@ -295,7 +310,11 @@ const EditDeckScreen = () => {
                         name="description"
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
-                                style={[styles.input, styles.descriptionInput, errors.description && styles.inputError]}
+                                style={[
+                                    styles.input,
+                                    styles.descriptionInput,
+                                    errors.description && styles.inputError,
+                                ]}
                                 placeholder="Enter deck description"
                                 value={value}
                                 onChangeText={onChange}
@@ -305,7 +324,9 @@ const EditDeckScreen = () => {
                         )}
                     />
                     {errors.description && (
-                        <Text style={styles.errorText}>{errors.description.message}</Text>
+                        <Text style={styles.errorText}>
+                            {errors.description.message}
+                        </Text>
                     )}
                 </View>
 
@@ -315,27 +336,46 @@ const EditDeckScreen = () => {
                         control={control}
                         name="visibility"
                         render={({ field: { value } }) => (
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={[
                                     styles.visibilitySelector,
-                                    value === 'private' ? styles.privateSelector : styles.publicSelector
+                                    value === 'private'
+                                        ? styles.privateSelector
+                                        : styles.publicSelector,
                                 ]}
                                 onPress={() => {
-                                    const newValue = value === 'private' ? 'public' : 'private';
-                                    setValue('visibility', newValue, { shouldDirty: true });
+                                    const newValue =
+                                        value === 'private'
+                                            ? 'public'
+                                            : 'private'
+                                    setValue('visibility', newValue, {
+                                        shouldDirty: true,
+                                    })
                                 }}
                             >
                                 <Text style={styles.iconContainer}>
-                                    <Ionicons 
-                                        name={value === 'private' ? "lock-closed" : "earth"} 
-                                        size={20} 
-                                        color={value === 'private' ? "#FF6B6B" : "#3D5CFF"} 
+                                    <Ionicons
+                                        name={
+                                            value === 'private'
+                                                ? 'lock-closed'
+                                                : 'earth'
+                                        }
+                                        size={20}
+                                        color={
+                                            value === 'private'
+                                                ? '#FF6B6B'
+                                                : '#3D5CFF'
+                                        }
                                     />
                                 </Text>
-                                <Text style={[
-                                    styles.visibilityText,
-                                    value === 'private' ? styles.privateText : styles.publicText
-                                ]}>
+                                <Text
+                                    style={[
+                                        styles.visibilityText,
+                                        value === 'private'
+                                            ? styles.privateText
+                                            : styles.publicText,
+                                    ]}
+                                >
                                     {value === 'private' ? 'Private' : 'Public'}
                                 </Text>
                             </TouchableOpacity>
@@ -345,12 +385,18 @@ const EditDeckScreen = () => {
 
                 {/* Instructions for swipe gesture */}
                 <Text style={styles.sectionTitle}>Flashcards</Text>
-                
+
                 <View style={styles.instructionText}>
                     <Text style={styles.iconContainer}>
-                        <Ionicons name="information-circle-outline" size={16} color="#666" />
-                    </Text> 
-                    <Text style={styles.instructionTextContent}>Swipe left on a flashcard to delete it</Text>
+                        <Ionicons
+                            name="information-circle-outline"
+                            size={16}
+                            color="#666"
+                        />
+                    </Text>
+                    <Text style={styles.instructionTextContent}>
+                        Swipe left on a flashcard to delete it
+                    </Text>
                 </View>
 
                 {/* Flashcards using the PairInput component */}
@@ -364,18 +410,20 @@ const EditDeckScreen = () => {
                         onDelete={deleteFlashcardPair}
                     />
                 ))}
-                
+
                 {/* Submit Button */}
                 <SubmitButton
-                    text={isSubmitting ? "Updating..." : "Update Deck"}
+                    text={isSubmitting ? 'Updating...' : 'Update Deck'}
                     onPress={handleSubmit(onSubmit)}
                     style={[
                         styles.submitButton,
-                        isButtonDisabled && styles.disabledButton
+                        isButtonDisabled && styles.disabledButton,
                     ]}
                     disabled={isButtonDisabled}
-                    icon={isSubmitting && 
-                        <ActivityIndicator size="small" color="#fff" /> 
+                    icon={
+                        isSubmitting && (
+                            <ActivityIndicator size="small" color="#fff" />
+                        )
                     }
                 />
             </ScrollView>
@@ -387,8 +435,8 @@ const EditDeckScreen = () => {
                 </Text>
             </TouchableOpacity>
         </SafeAreaView>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -416,7 +464,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         padding: 20,
-        paddingBottom: 80, 
+        paddingBottom: 80,
     },
     inputGroup: {
         marginBottom: 15,
@@ -445,8 +493,8 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     descriptionInput: {
-        height: 100, 
-        textAlignVertical: 'top', 
+        height: 100,
+        textAlignVertical: 'top',
     },
     sectionTitle: {
         fontSize: 18,
@@ -525,6 +573,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-});
+})
 
-export default EditDeckScreen;
+export default EditDeckScreen

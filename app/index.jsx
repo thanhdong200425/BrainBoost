@@ -30,7 +30,7 @@ export default function Index() {
             />
         )
 
-    if (accessToken) return <Redirect href="/bottom/home" />
+    if (data?.token) return <Redirect href="/bottom/home" />
 
     return <Redirect href="/onboarding" />
 }

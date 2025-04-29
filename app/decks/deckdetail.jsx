@@ -1,5 +1,5 @@
-import React from 'react';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import React from 'react'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import {
     View,
     Text,
@@ -9,16 +9,16 @@ import {
     ActivityIndicator,
     StatusBar,
     Image,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { FlashcardFlipCarousel } from '../../components';
-import { getDeckById } from '../../services/deckService';
-import { useQuery } from '@tanstack/react-query';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { FlashcardFlipCarousel } from '../../components'
+import { getDeckById } from '../../services/deckService'
+import { useQuery } from '@tanstack/react-query'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const DeckDetailScreen = () => {
-    const router = useRouter();
-    const { id } = useLocalSearchParams();
+    const router = useRouter()
+    const { id } = useLocalSearchParams()
 
     const {
         data: deck,
@@ -29,7 +29,7 @@ const DeckDetailScreen = () => {
         queryKey: ['deck', id],
         queryFn: () => getDeckById(id),
         enabled: !!id,
-    });
+    })
 
     const handleZoom = (item) => {
         router.push({
@@ -38,8 +38,8 @@ const DeckDetailScreen = () => {
                 flashcards: JSON.stringify([item]),
                 deckName: deck.name,
             },
-        });
-    };
+        })
+    }
 
     const navigateToFlashcards = () => {
         router.push({
@@ -48,21 +48,20 @@ const DeckDetailScreen = () => {
                 flashcards: JSON.stringify(deck.flashcards),
                 deckName: deck.name,
             },
-        });
-    };
+        })
+    }
 
     const navigateToLearn = () => {
         router.push({
-           pathname: "/learning/learn", 
-            params: { 
-                flashcards: JSON.stringify(deck.flashcards), 
+            pathname: '/learning/learn',
+            params: {
+                flashcards: JSON.stringify(deck.flashcards),
                 deckName: deck.name,
                 deckId: id,
-                data: JSON.stringify()
-              },
-        });
-    };
-            
+                data: JSON.stringify(),
+            },
+        })
+    }
 
     const navigateToTestScreen = () => {
         router.push({
@@ -71,26 +70,31 @@ const DeckDetailScreen = () => {
                 flashcards: JSON.stringify(deck.flashcards),
                 deckName: deck.name,
             },
-        });
-    };
+        })
+    }
 
     if (isLoading) {
         return (
             <SafeAreaView style={[styles.safeArea, styles.centerContent]}>
                 <ActivityIndicator size="large" color="#3D5CFF" />
             </SafeAreaView>
-        );
+        )
     }
 
     if (isError) {
         return (
             <SafeAreaView style={[styles.safeArea, styles.centerContent]}>
-                <Text style={styles.errorText}>Error loading deck: {error.message}</Text>
-                <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+                <Text style={styles.errorText}>
+                    Error loading deck: {error.message}
+                </Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => router.back()}
+                >
                     <Text style={styles.buttonText}>Go Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>
-        );
+        )
     }
 
     return (
@@ -102,7 +106,7 @@ const DeckDetailScreen = () => {
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={24} color="#333" />
                 </TouchableOpacity>
-                <Text style={styles.title}>{deck.name}</Text>
+                <Text style={styles.title}>{deck?.name}</Text>
                 <View style={{ width: 24 }} />
             </View>
 
@@ -121,7 +125,10 @@ const DeckDetailScreen = () => {
 
                 {/* Navigation */}
                 <View style={styles.navContainer}>
-                    <TouchableOpacity style={styles.navButton} onPress={navigateToFlashcards}>
+                    <TouchableOpacity
+                        style={styles.navButton}
+                        onPress={navigateToFlashcards}
+                    >
                         <View style={styles.iconBackground}>
                             <Image
                                 source={require('../../assets/images/flashcard.png')}
@@ -132,8 +139,16 @@ const DeckDetailScreen = () => {
                         <Text style={styles.navLabel}>Flashcard</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.navButton} onPress={navigateToLearn}>
-                        <View style={[styles.iconBackground, styles.learnBackground]}>
+                    <TouchableOpacity
+                        style={styles.navButton}
+                        onPress={navigateToLearn}
+                    >
+                        <View
+                            style={[
+                                styles.iconBackground,
+                                styles.learnBackground,
+                            ]}
+                        >
                             <Image
                                 source={require('../../assets/images/learn.png')}
                                 style={styles.navIcon}
@@ -143,8 +158,16 @@ const DeckDetailScreen = () => {
                         <Text style={styles.navLabel}>Learn</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.navButton} onPress={navigateToTestScreen}>
-                        <View style={[styles.iconBackground, styles.testBackground]}>
+                    <TouchableOpacity
+                        style={styles.navButton}
+                        onPress={navigateToTestScreen}
+                    >
+                        <View
+                            style={[
+                                styles.iconBackground,
+                                styles.testBackground,
+                            ]}
+                        >
                             <Image
                                 source={require('../../assets/images/test.png')}
                                 style={styles.navIcon}
@@ -160,7 +183,11 @@ const DeckDetailScreen = () => {
                     {/* Description */}
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <Ionicons name="information-circle-outline" size={18} color="#3D5CFF" />
+                            <Ionicons
+                                name="information-circle-outline"
+                                size={18}
+                                color="#3D5CFF"
+                            />
                             <Text style={styles.sectionTitle}>Description</Text>
                         </View>
                         <View style={styles.descriptionBox}>
@@ -193,9 +220,17 @@ const DeckDetailScreen = () => {
                             ]}
                         >
                             <Ionicons
-                                name={deck.visibility === 'private' ? 'lock-closed' : 'earth'}
+                                name={
+                                    deck.visibility === 'private'
+                                        ? 'lock-closed'
+                                        : 'earth'
+                                }
                                 size={16}
-                                color={deck.visibility === 'private' ? '#FF6B6B' : '#3D5CFF'}
+                                color={
+                                    deck.visibility === 'private'
+                                        ? '#FF6B6B'
+                                        : '#3D5CFF'
+                                }
                                 style={styles.visibilityIcon}
                             />
                             <Text
@@ -206,7 +241,9 @@ const DeckDetailScreen = () => {
                                         : styles.publicText,
                                 ]}
                             >
-                                {deck.visibility === 'private' ? 'Private' : 'Public'}
+                                {deck.visibility === 'private'
+                                    ? 'Private'
+                                    : 'Public'}
                             </Text>
                         </View>
                     </View>
@@ -215,33 +252,47 @@ const DeckDetailScreen = () => {
                 {/* Preview Flashcards */}
                 <View style={styles.previewContainer}>
                     <View style={styles.sectionHeader}>
-                        <Ionicons name="card-outline" size={18} color="#3D5CFF" />
-                        <Text style={styles.sectionTitle}>Preview flashcards</Text>
+                        <Ionicons
+                            name="card-outline"
+                            size={18}
+                            color="#3D5CFF"
+                        />
+                        <Text style={styles.sectionTitle}>
+                            Preview flashcards
+                        </Text>
                     </View>
 
                     {deck.flashcards.map((item, idx) => (
                         <View key={idx} style={styles.flashcardPreview}>
                             <View style={styles.flashcardTerm}>
                                 <View style={styles.termHeader}>
-                                    <Text style={styles.previewLabel}>Term</Text>
+                                    <Text style={styles.previewLabel}>
+                                        Term
+                                    </Text>
                                     <View style={styles.termIndicator} />
                                 </View>
-                                <Text style={styles.previewTermText}>{item.frontText}</Text>
+                                <Text style={styles.previewTermText}>
+                                    {item.frontText}
+                                </Text>
                             </View>
                             <View style={styles.flashcardDefinition}>
                                 <View style={styles.definitionHeader}>
-                                    <Text style={styles.previewLabel}>Definition</Text>
+                                    <Text style={styles.previewLabel}>
+                                        Definition
+                                    </Text>
                                     <View style={styles.definitionIndicator} />
                                 </View>
-                                <Text style={styles.previewDefinitionText}>{item.backText}</Text>
+                                <Text style={styles.previewDefinitionText}>
+                                    {item.backText}
+                                </Text>
                             </View>
                         </View>
                     ))}
                 </View>
             </ScrollView>
         </SafeAreaView>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     safeArea: {
@@ -265,9 +316,19 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 3,
     },
-    title: { fontSize: 22, fontWeight: '700', color: '#333', flex: 1, textAlign: 'center' },
+    title: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#333',
+        flex: 1,
+        textAlign: 'center',
+    },
     scrollContent: { paddingBottom: 40 },
-    centerContent: { justifyContent: 'center', alignItems: 'center', padding: 20 },
+    centerContent: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
     carouselContainer: { marginTop: 20, paddingHorizontal: 15 },
     navContainer: {
         flexDirection: 'row',
@@ -312,8 +373,17 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     section: { marginBottom: 20 },
-    sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-    sectionTitle: { fontWeight: '700', fontSize: 16, marginLeft: 8, color: '#333' },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    sectionTitle: {
+        fontWeight: '700',
+        fontSize: 16,
+        marginLeft: 8,
+        color: '#333',
+    },
     descriptionBox: {
         backgroundColor: '#F0F5FF',
         borderRadius: 16,
@@ -360,7 +430,11 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 2,
     },
-    flashcardTerm: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#E8EEFF' },
+    flashcardTerm: {
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E8EEFF',
+    },
     flashcardDefinition: { padding: 16, backgroundColor: '#F8FAFF' },
     termHeader: {
         flexDirection: 'row',
@@ -374,12 +448,32 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 8,
     },
-    termIndicator: { width: 24, height: 6, backgroundColor: '#3D5CFF', borderRadius: 3 },
-    definitionIndicator: { width: 24, height: 6, backgroundColor: '#7B93FF', borderRadius: 3 },
-    previewLabel: { fontSize: 12, fontWeight: '600', color: '#888', textTransform: 'uppercase' },
+    termIndicator: {
+        width: 24,
+        height: 6,
+        backgroundColor: '#3D5CFF',
+        borderRadius: 3,
+    },
+    definitionIndicator: {
+        width: 24,
+        height: 6,
+        backgroundColor: '#7B93FF',
+        borderRadius: 3,
+    },
+    previewLabel: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#888',
+        textTransform: 'uppercase',
+    },
     previewTermText: { fontSize: 17, fontWeight: '600', color: '#333' },
     previewDefinitionText: { fontSize: 17, color: '#444' },
-    errorText: { color: '#FF6B6B', marginBottom: 20, textAlign: 'center', fontSize: 16 },
+    errorText: {
+        color: '#FF6B6B',
+        marginBottom: 20,
+        textAlign: 'center',
+        fontSize: 16,
+    },
     button: {
         backgroundColor: '#3D5CFF',
         paddingVertical: 12,
@@ -387,6 +481,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     buttonText: { color: '#FFF', fontWeight: '600', fontSize: 16 },
-});
+})
 
-export default DeckDetailScreen;
+export default DeckDetailScreen
