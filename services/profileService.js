@@ -47,7 +47,7 @@ export const updateProfile = async ({ username, email, dob }) => {
 export const updateAvatar = async (avatar_url) => {
     try {
         const response = await serverApi.put('/api/profile', { avatar_url })
-        return response.data.data // Trả về dữ liệu người dùng đã cập nhật
+        return response.data.data
     } catch (error) {
         if (error.response) {
             throw new Error(
