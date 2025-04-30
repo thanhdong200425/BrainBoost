@@ -9,9 +9,10 @@ import {
 import { useRouter } from 'expo-router'
 import { PieChart } from 'react-native-chart-kit'
 import { SubmitButton, PieLegend, ContentCarousel } from '../../components'
+import { AIGenerateModal } from '../../components/others'
 import HomeHeader from '../../components/headers/HomeHeader'
-import { useQuery } from '@tanstack/react-query'
-import { getHomeData } from '../../services/homeService'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { generateDeckWithAI, getHomeData } from '../../services/homeService'
 import { ITEM_WIDTH } from '../../constants/sizes'
 import { useSelector } from 'react-redux'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -21,6 +22,8 @@ export default function HomeScreen() {
     const [selectedDeckIndex, setSelectedDeckIndex] = useState(0)
     const [selectedClassIndex, setSelectedClassIndex] = useState(0)
     const [selectedFolderIndex, setSelectedFolderIndex] = useState(0)
+    const [topic, setTopic] = useState('')
+    const [isModalVisible, setIsModalVisible] = useState(false)
     const accessToken = useSelector((state) => state.auth.accessToken)
 
     const {
@@ -32,6 +35,25 @@ export default function HomeScreen() {
         queryKey: ['homeData'],
         queryFn: getHomeData,
         enabled: !!accessToken,
+    })
+
+    const generateDeckMutation = useMutation({
+        mutationFn: generateDeckWithAI,
+        onSuccess: (data) => {
+            setIsModalVisible(false)
+            router.push({
+                pathname: '/decks/adddeck',
+                params: {
+                    title: topic || 'AI Generated Flashcards',
+                    description:
+                        data.description || 'Flashcards generated with AI',
+                    flashcards: JSON.stringify(data.flashcards),
+                },
+            })
+        },
+        onError: (error) => {
+            console.error('Error generating deck:', error)
+        },
     })
 
     const navigateToDeckDetail = useCallback(
@@ -57,6 +79,18 @@ export default function HomeScreen() {
         },
         [router],
     )
+
+    const handleClickGenerateDeck = useCallback(() => {
+        setIsModalVisible(true)
+    }, [])
+
+    const handleCloseModal = useCallback(() => {
+        setIsModalVisible(false)
+    }, [])
+
+    const handleGenerateWithParams = useCallback((params) => {
+        generateDeckMutation.mutate(params)
+    }, [])
 
     if (isLoading)
         return (
@@ -118,11 +152,10 @@ export default function HomeScreen() {
 
                 <View style={styles.content}>
                     <SubmitButton
+                        isLoading={generateDeckMutation.isPending}
                         text="✨ Generate New Flashcards with AI ✨"
-                        onPress={() =>
-                            console.log('AI Flashcard button pressed')
-                        }
                         style={styles.buttonShadow}
+                        onPress={handleClickGenerateDeck}
                         textStyle={{ fontSize: 15 }}
                     />
 
@@ -191,6 +224,16 @@ export default function HomeScreen() {
                     </View>
                 </View>
             </ScrollView>
+
+            {/* AI Generate Modal */}
+            <AIGenerateModal
+                visible={isModalVisible}
+                onClose={handleCloseModal}
+                onGenerate={handleGenerateWithParams}
+                isLoading={generateDeckMutation.isPending}
+                topic={topic}
+                setTopic={setTopic}
+            />
         </SafeAreaView>
     )
 }

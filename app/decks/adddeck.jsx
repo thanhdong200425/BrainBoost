@@ -8,7 +8,7 @@ import {
     TextInput,
     ActivityIndicator,
 } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { PairInput, SubmitButton } from '../../components'
 import Toast from 'react-native-toast-message'
@@ -24,17 +24,38 @@ import {
 
 const AddDeckScreen = () => {
     const router = useRouter()
+    const params = useLocalSearchParams()
     const queryClient = useQueryClient()
 
-    const [deckInfo, setDeckInfo] = useState({
-        title: '',
-        description: '',
-        visibility: 'public',
-        flashcards: [
+    const [deckInfo, setDeckInfo] = useState(() => {
+        let flashcards = [
             { id: 1, term: '', definition: '' },
             { id: 2, term: '', definition: '' },
             { id: 3, term: '', definition: '' },
-        ],
+        ]
+        if (params.flashcards) {
+            try {
+                const parsed = JSON.parse(params.flashcards)
+                flashcards = parsed.map((card, index) => ({
+                    id: index + 1,
+                    term: card.front_text || card.term || '',
+                    definition: card.back_text || card.definition || '',
+                }))
+            } catch (e) {
+                // fallback to default
+                flashcards = [
+                    { id: 1, term: '', definition: '' },
+                    { id: 2, term: '', definition: '' },
+                    { id: 3, term: '', definition: '' },
+                ]
+            }
+        }
+        return {
+            title: params.title || '',
+            description: params.description || '',
+            visibility: 'public',
+            flashcards,
+        }
     })
 
     // Create deck mutation
@@ -285,7 +306,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 15,
-        paddingTop: 40,
+        paddingTop: 60,
         paddingBottom: 15,
         backgroundColor: '#FFF',
         borderBottomWidth: 1,
