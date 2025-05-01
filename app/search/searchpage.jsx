@@ -27,7 +27,7 @@ export default function SearchPage() {
         enabled: searchQuery.length > 0,
     })
 
-    const searchResults = data?.data?.decks ?? []
+    const searchResults = data?.decks ?? []
 
     return (
         <SafeAreaView style={styles.safeArea}>
