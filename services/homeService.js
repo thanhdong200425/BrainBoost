@@ -26,11 +26,29 @@ export const generateDeckWithAI = async (params = {}) => {
                 level,
                 quantity,
             },
-            { timeout: 100000 },
+            { timeout: 1000000 },
         )
         return response.data.response
     } catch (error) {
         console.error('Error generating deck with AI:', error)
+        throw error
+    }
+}
+
+export const generateDistractors = async (flashcards) => {
+    try {
+        const payload = {
+            questions: flashcards?.map((flashcard) => flashcard.frontText),
+            answers: flashcards?.map((flashcard) => flashcard.backText),
+        }
+        const response = await serverApi.post(
+            '/ai/flashcards/generate-distractors',
+            payload,
+            { timeout: 1000000 },
+        )
+        return response.data.response
+    } catch (error) {
+        console.error('Error generating distractors:', error)
         throw error
     }
 }

@@ -13,8 +13,10 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { FlashcardFlipCarousel } from '../../components'
 import { getDeckById } from '../../services/deckService'
-import { useQuery } from '@tanstack/react-query'
+import { generateDistractors } from '../../services/homeService'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Toast from 'react-native-toast-message'
 
 const DeckDetailScreen = () => {
     const router = useRouter()
@@ -29,6 +31,31 @@ const DeckDetailScreen = () => {
         queryKey: ['deck', id],
         queryFn: () => getDeckById(id),
         enabled: !!id,
+    })
+
+    const generateDistractorsMutation = useMutation({
+        mutationKey: ['deck', id],
+        mutationFn: () => generateDistractors(deck.flashcards),
+        onSuccess: (data) => {
+            console.log(data.response)
+            router.push({
+                pathname: '/learning/learn',
+                params: {
+                    flashcards: JSON.stringify(deck.flashcards),
+                    deckName: deck.name,
+                    deckId: id,
+                    data: JSON.stringify(data?.response),
+                },
+            })
+        },
+        onError: (error) => {
+            console.log('Error generating distractors:', error)
+            Toast.show({
+                type: 'error',
+                text1: 'Oops! We encountered an error',
+                text2: 'Please try again later.',
+            })
+        },
     })
 
     const handleZoom = (item) => {
@@ -51,16 +78,8 @@ const DeckDetailScreen = () => {
         })
     }
 
-    const navigateToLearn = () => {
-        router.push({
-            pathname: '/learning/learn',
-            params: {
-                flashcards: JSON.stringify(deck.flashcards),
-                deckName: deck.name,
-                deckId: id,
-                data: JSON.stringify(),
-            },
-        })
+    const navigateToLearn = async () => {
+        await generateDistractorsMutation.mutateAsync()
     }
 
     const navigateToTestScreen = () => {
@@ -149,11 +168,15 @@ const DeckDetailScreen = () => {
                                 styles.learnBackground,
                             ]}
                         >
-                            <Image
-                                source={require('../../assets/images/learn.png')}
-                                style={styles.navIcon}
-                                resizeMode="contain"
-                            />
+                            {generateDistractorsMutation.isPending ? (
+                                <ActivityIndicator color={'#000'} />
+                            ) : (
+                                <Image
+                                    source={require('../../assets/images/learn.png')}
+                                    style={styles.navIcon}
+                                    resizeMode="contain"
+                                />
+                            )}
                         </View>
                         <Text style={styles.navLabel}>Learn</Text>
                     </TouchableOpacity>
