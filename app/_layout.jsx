@@ -28,6 +28,7 @@ export default function RootLayout() {
                             <Stack.Screen name="learning" />
                             <Stack.Screen name="result" />
                             <Stack.Screen name="user" />
+                            <Stack.Screen name="search" />
                         </Stack>
                     </Provider>
                 </QueryClientProvider>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 const HomeHeader = ({ userData }) => {
@@ -10,15 +10,14 @@ const HomeHeader = ({ userData }) => {
         <View style={styles.headerContainer}>
             {/* Search and Profile Row */}
             <View style={styles.topRow}>
-                <View style={styles.searchContainer}>
-                    <MaterialCommunityIcons name="magnify" size={24} color="#666" style={{ marginLeft: 12 }} />
-                    <TextInput
-                        placeholder="Search"
-                        placeholderTextColor="#666"
-                        style={styles.searchInput}
-                    />
-                </View>
-                <TouchableOpacity onPress={() => router.push("/profile")}>
+                <TouchableOpacity 
+                    onPress={() => router.push('/search/searchpage')} 
+                    style={styles.searchContainer}
+                >
+                    <Ionicons name="search" size={24} color="#666" style={{ marginLeft: 12 }} />
+                    <Text style={styles.searchInput}>Search everything</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/bottom/profile')}>
                     <Image 
                         source={{ uri: 'https://picsum.photos/200' }}
                         style={styles.profileImage}
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         marginLeft: 8,
-        color: '#1A1F36',
+        color: '#666',
     },
     profileImage: {
         width: 40,
@@ -88,4 +87,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeHeader; 
+export default HomeHeader;
