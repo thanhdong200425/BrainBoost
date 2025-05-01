@@ -39,7 +39,7 @@ export default function DeckListResult({ decks }) {
                         color="#888"
                     />
                     <Text style={styles.authorName}>
-                        {item.author_id ?? 'Unknown'}
+                        {item.author.username ?? 'Unknown'}
                     </Text>
                 </View>
             </View>
