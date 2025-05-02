@@ -46,15 +46,15 @@ export default function ProfileScreen() {
         },
     }
 
-    const barData = [
-        { value: 6.5, label: 'Sun' },
-        { value: 4.3, label: 'Mon', frontColor: '#177AD5' },
-        { value: 6, label: 'Tue', frontColor: '#177AD5' },
-        { value: 8, label: 'Web' },
-        { value: 9.3, label: 'Thu', frontColor: '#177AD5' },
-        { value: 7.2, label: 'Fri' },
-        { value: 6.4, label: 'Sat' },
-    ]
+    // const barData = [
+    //     { value: 6.5, label: 'Sun' },
+    //     { value: 4.3, label: 'Mon', frontColor: '#177AD5' },
+    //     { value: 6, label: 'Tue', frontColor: '#177AD5' },
+    //     { value: 8, label: 'Web' },
+    //     { value: 9.3, label: 'Thu', frontColor: '#177AD5' },
+    //     { value: 7.2, label: 'Fri' },
+    //     { value: 6.4, label: 'Sat' },
+    // ]
 
     if (isLoading) {
         return (
@@ -272,6 +272,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         backgroundColor: '#F5F5F5',
         borderRadius: 10,
+        paddingBottom: 15
     },
     activityHeaderContainer: {
         flexDirection: 'row',
