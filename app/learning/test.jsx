@@ -357,15 +357,16 @@ export default function TestScreen() {
                         )}
 
                     {/* Next / Finish Button */}
-                    {((selectedOption !== null && showInstantFeedback) ||
+                    {(selectedOption !== null && showInstantFeedback) ||
                         (currentQuestion.type === 'written' &&
-                            showWrittenFeedback)) && (
-                        <SubmitButton
-                            text={isLast ? 'Finish' : 'Next'}
-                            onPress={handleNextOrFinish}
-                            style={styles.nextBtn}
-                        />
-                    )}
+                            showWrittenFeedback) ||
+                        (selectedOption !== null && isLast && (
+                            <SubmitButton
+                                text={isLast ? 'Finish' : 'Next'}
+                                onPress={handleNextOrFinish}
+                                style={styles.nextBtn}
+                            />
+                        ))}
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
