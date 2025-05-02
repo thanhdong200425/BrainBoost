@@ -84,10 +84,11 @@ const DeckDetailScreen = () => {
 
     const navigateToTestScreen = () => {
         router.push({
-            pathname: '/learning/test',
+            pathname: '/learning/setuptest',
             params: {
                 flashcards: JSON.stringify(deck.flashcards),
                 deckName: deck.name,
+                deckId: id,
             },
         })
     }
