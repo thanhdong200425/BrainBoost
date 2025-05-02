@@ -16,7 +16,6 @@ import AnswerOption from '../../components/containers/AnswerOption'
 import ProgressBar from '../../components/containers/ProgressBar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-// Hàm shuffle array
 const shuffleArray = (array) => {
     const newArray = [...array]
     for (let i = newArray.length - 1; i > 0; i--) {
@@ -203,7 +202,15 @@ const LearnScreen = () => {
                         key={index}
                         option={option}
                         onPress={() => handleOptionPress(option)}
-                        isCorrect={option === currentCard.correctAnswer}
+                        isCorrect={
+                            state.isAnswered &&
+                            option === currentCard.correctAnswer
+                        }
+                        isIncorrect={
+                            state.isAnswered &&
+                            option === state.selectedOption &&
+                            option !== currentCard.correctAnswer
+                        }
                         isSelected={option === state.selectedOption}
                         disabled={state.isAnswered}
                     />

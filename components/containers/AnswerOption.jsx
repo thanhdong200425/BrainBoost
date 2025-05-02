@@ -10,6 +10,9 @@ const AnswerOption = ({
     isSelected,
     disabled,
 }) => {
+    const shouldShowCorrect = isCorrect && isSelected !== null
+    const shouldShowIncorrect = isIncorrect && isSelected !== null
+
     let optionStyle = [styles.optionButton]
     let textStyle = [styles.optionText]
     let showIcon = false
@@ -20,13 +23,13 @@ const AnswerOption = ({
         optionStyle.push(styles.selectedOption)
     }
 
-    if (isCorrect) {
+    if (shouldShowCorrect) {
         optionStyle.push(styles.correctOption)
         textStyle.push(styles.correctText)
         showIcon = true
         iconName = 'checkmark-circle'
         iconColor = '#4CAF50'
-    } else if (isIncorrect) {
+    } else if (shouldShowIncorrect) {
         optionStyle.push(styles.wrongOption)
         textStyle.push(styles.wrongText)
         showIcon = true
