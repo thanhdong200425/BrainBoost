@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingVertical: 25,
         backgroundColor: "#f7fcff",
+        width: 85
     },
     statNumber: {
         fontSize: 24,

@@ -16,18 +16,37 @@ import ProgressBar from '../../components/containers/ProgressBar'
 import InviteFriends from '../../components/footer/InviteFriends'
 import { useQuery } from '@tanstack/react-query'
 import { getProfile } from '../../services/profileService'
+import { getAllDecks } from "../../services/deckService";
 export default function ProfileScreen() {
     const router = useRouter()
 
     const {
         data: user,
-        isLoading,
-        isError,
-        error,
+        isLoading: isUserLoading,
+        isError: isUserError,
+        error: userError,
     } = useQuery({
         queryKey: ['userProfile'],
         queryFn: getProfile,
-    })
+    });
+
+    const {
+        data: decksData,
+        isLoading: isDecksLoading,
+        isError: isDecksError,
+        error: decksError,
+    } = useQuery({
+        queryKey: ['decks'],
+        queryFn: getAllDecks,
+    });
+
+    // Combine các trạng thái loading
+    const isLoading = isUserLoading || isDecksLoading;
+
+    const error = userError || decksError;
+
+    // Tính deckCount từ decksData
+    const deckCount = decksData?.decks?.length || 0;
 
     // Du lieu tinh cho giao dien
     const userData = {
@@ -66,14 +85,24 @@ export default function ProfileScreen() {
         )
     }
 
-    if (isError) {
+    if (isUserError || isDecksError) {
         return (
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.center}>
-                    <Text style={styles.errorText}>Error: {error}</Text>
+                    <Text style={styles.errorText}>Error: {error?.message || 'Failed to fetch data. Please try again.'}</Text>
                 </View>
             </SafeAreaView>
-        )
+        );
+    }
+
+    if (!user) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.center}>
+                    <Text>No user data available</Text>
+                </View>
+            </SafeAreaView>
+        );
     }
 
     return (
@@ -156,8 +185,8 @@ export default function ProfileScreen() {
                         <StatItem
                             iconName="clock-o"
                             iconColor="#007AFF"
-                            number={userData.courses.inProgress}
-                            label="In Progress"
+                            number={deckCount}
+                            label="Decks"
                         />
                         <StatItem
                             iconName="check-circle"
