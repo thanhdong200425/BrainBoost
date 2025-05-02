@@ -109,7 +109,7 @@ const DeckDetailScreen = () => {
                 </Text>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => router.back()}
+                    onPress={() => router.push('/bottom/decks')}
                 >
                     <Text style={styles.buttonText}>Go Back</Text>
                 </TouchableOpacity>
@@ -123,7 +123,7 @@ const DeckDetailScreen = () => {
 
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()}>
+                <TouchableOpacity onPress={() => router.push('/bottom/decks')}>
                     <Ionicons name="arrow-back" size={24} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.title}>{deck?.name}</Text>
