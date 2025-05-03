@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useRouter } from 'expo-router'
 import StatItem from '../../components/containers/StatItem'
+import { BarChart } from "react-native-gifted-charts";
 import ProgressBar from '../../components/containers/ProgressBar'
 import InviteFriends from '../../components/footer/InviteFriends'
 import { useQuery } from '@tanstack/react-query'
@@ -159,6 +160,20 @@ export default function ProfileScreen() {
                             {userData.hoursSpent}
                         </Text>
                         <Text style={styles.hoursLabel}>Hours Spents</Text>
+                    </View>
+                    {/* Bar Chart */}
+                    <View style={styles.chartContainer}>
+                        <BarChart
+                            barWidth={18}
+                            noOfSections={4}
+                            barBorderRadius={6}
+                            frontColor="lightgray"
+                            yAxisThickness={0}
+                            xAxisThickness={0}
+                            spacing={20}
+                            isAnimated
+                            data={barData}
+                        />
                     </View>
                 </View>
 
