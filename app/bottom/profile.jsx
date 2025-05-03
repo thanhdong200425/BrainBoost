@@ -47,6 +47,8 @@ export default function ProfileScreen() {
 
     // Tính deckCount từ decksData
     const deckCount = decksData?.decks?.length || 0;
+    const folderCount = decksData?.folderCount || 0;
+    const flashCardCount = decksData?.flashcardCount || 0;
 
     // Du lieu tinh cho giao dien
     const userData = {
@@ -163,11 +165,10 @@ export default function ProfileScreen() {
                 {/* Progress Statistics */}
                 <View style={styles.progressContainer}>
                     <Text style={styles.sectionTitle}>Progress statistics</Text>
-                    <Text style={styles.progressTotal}>
+                    {/* <Text style={styles.progressTotal}>
                         {userData.progress.total}{' '}
                         <Text style={styles.progressLabel}>Total Activity</Text>
                     </Text>
-                    {/* Progress Bars */}
                     <ProgressBar
                         value={userData.progress.activity}
                         color="#007AFF"
@@ -179,26 +180,26 @@ export default function ProfileScreen() {
                     <ProgressBar
                         value={userData.progress.upcoming}
                         color="#ff8f00"
-                    />
+                    /> */}
                     {/* Course Stats */}
                     <View style={styles.courseStatsContainer}>
                         <StatItem
-                            iconName="clock-o"
+                            iconName="folder"
+                            iconColor="#34C759"
+                            number={folderCount}
+                            label="Folders"
+                        />
+                        <StatItem
+                            iconName="credit-card"
                             iconColor="#007AFF"
                             number={deckCount}
                             label="Decks"
                         />
                         <StatItem
-                            iconName="check-circle"
-                            iconColor="#34C759"
-                            number={userData.courses.completed}
-                            label="Completed"
-                        />
-                        <StatItem
-                            iconName="calendar"
+                            iconName="documents"
                             iconColor="#FF9500"
-                            number={userData.courses.upcoming}
-                            label="Upcoming"
+                            number={flashCardCount}
+                            label="Flashcards"
                         />
                     </View>
                 </View>
