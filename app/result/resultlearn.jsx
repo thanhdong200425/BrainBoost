@@ -34,6 +34,10 @@ const ResultLearnScreen = () => {
         }
 
         const shuffledData = parsed.map((item) => {
+            if (!item || !item.options || !Array.isArray(item.options)) {
+                return item
+            }
+
             return {
                 ...item,
                 options: shuffleArray([...item.options]),
@@ -53,7 +57,7 @@ const ResultLearnScreen = () => {
 
     const handleTakeTest = () => {
         router.push({
-            pathname: '/learning/test',
+            pathname: '/learning/setuptest',
             params: {
                 deckId: deckId,
                 deckName: params.deckName,

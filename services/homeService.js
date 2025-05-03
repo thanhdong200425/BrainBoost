@@ -46,6 +46,7 @@ export const generateDistractors = async (flashcards) => {
             payload,
             { timeout: 1000000 },
         )
+        console.log('Generated distractors:', response.data.response)
         return response.data.response
     } catch (error) {
         console.error('Error generating distractors:', error)
