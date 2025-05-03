@@ -53,6 +53,7 @@ export default function ProfileScreen() {
         queryFn: getTotalFolders,
     });
 
+
     const {
         data: totalFlashcardData,
         isLoading: isTotalFlashcardLoading,
@@ -68,14 +69,12 @@ export default function ProfileScreen() {
 
     const error = userError || decksError || totalFolderError | totalFlashcardError;
 
-    // Tính deckCount từ decksData
     const deckCount = decksData?.decks?.length || 0;
 
     const folderCount = totalFolderData?.folderCount || 0;
 
     const flashcardCount = totalFlashcardData?.flashcardCount || 0;
 
-    // Du lieu tinh cho giao dien
     const userData = {
         role: 'UX/UX Designer',
         hoursSpent: '14h 9m',
