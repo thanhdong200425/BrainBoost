@@ -41,17 +41,14 @@ export default function ProfileScreen() {
         queryFn: getAllDecks,
     });
 
-    // Combine các trạng thái loading
     const isLoading = isUserLoading || isDecksLoading;
 
     const error = userError || decksError;
 
-    // Tính deckCount từ decksData
     const deckCount = decksData?.decks?.length || 0;
     const folderCount = decksData?.folderCount || 0;
     const flashCardCount = decksData?.flashcardCount || 0;
 
-    // Du lieu tinh cho giao dien
     const userData = {
         role: 'UX/UX Designer',
         hoursSpent: '14h 9m',
