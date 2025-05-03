@@ -48,10 +48,11 @@ const LearnScreen = () => {
                 // Process and combine flashcards with distractors
                 const combinedData = parsedData.map((item, index) => {
                     // Create an array with correct answer and distractors
-                    const options = shuffleArray([
-                        ...item.distractors,
-                        item.answer,
-                    ])
+                    const options = shuffleArray(
+                        item.options
+                            ? [...item.options]
+                            : [...item.distractors, item.answer],
+                    )
 
                     return {
                         question: item.question,
