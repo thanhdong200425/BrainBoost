@@ -18,6 +18,8 @@ import InviteFriends from '../../components/footer/InviteFriends'
 import { useQuery } from '@tanstack/react-query'
 import { getProfile } from '../../services/profileService'
 import { getAllDecks } from "../../services/deckService";
+import { getTotalFolders } from '../../services/folderService'
+import { getTotalFlashcards } from '../../services/flashcardService'
 export default function ProfileScreen() {
     const router = useRouter()
 
@@ -41,15 +43,37 @@ export default function ProfileScreen() {
         queryFn: getAllDecks,
     });
 
-    // Combine các trạng thái loading
-    const isLoading = isUserLoading || isDecksLoading;
+    const {
+        data: totalFolderData,
+        isLoading: isTotalFolderLoading,
+        isError: isTotalFolderError,
+        error: totalFolderError,
+    } = useQuery({
+        queryKey: ['totalfolders'],
+        queryFn: getTotalFolders,
+    });
 
-    const error = userError || decksError;
+    const {
+        data: totalFlashcardData,
+        isLoading: isTotalFlashcardLoading,
+        isError: isTotalFlashcardError,
+        error: totalFlashcardError,
+    } = useQuery({
+        queryKey: ['totalflashcards'],
+        queryFn: getTotalFlashcards,
+    });
+
+    // Combine các trạng thái loading
+    const isLoading = isUserLoading || isDecksLoading || isTotalFolderLoading || isTotalFlashcardLoading;
+
+    const error = userError || decksError || totalFolderError | totalFlashcardError;
 
     // Tính deckCount từ decksData
     const deckCount = decksData?.decks?.length || 0;
-    const folderCount = decksData?.folderCount || 0;
-    const flashCardCount = decksData?.flashcardCount || 0;
+
+    const folderCount = totalFolderData?.folderCount || 0;
+
+    const flashcardCount = totalFlashcardData?.flashcardCount || 0;
 
     // Du lieu tinh cho giao dien
     const userData = {
@@ -88,7 +112,7 @@ export default function ProfileScreen() {
         )
     }
 
-    if (isUserError || isDecksError) {
+    if (isUserError || isDecksError || isTotalFolderError || isTotalFlashcardError) {
         return (
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.center}>
@@ -213,7 +237,7 @@ export default function ProfileScreen() {
                         <StatItem
                             iconName="documents"
                             iconColor="#FF9500"
-                            number={flashCardCount}
+                            number={flashcardCount}
                             label="Flashcards"
                         />
                     </View>
