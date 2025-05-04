@@ -64,7 +64,6 @@ export default function ProfileScreen() {
         queryFn: getTotalFlashcards,
     });
 
-    // Combine các trạng thái loading
     const isLoading = isUserLoading || isDecksLoading || isTotalFolderLoading || isTotalFlashcardLoading;
 
     const error = userError || decksError || totalFolderError | totalFlashcardError;
