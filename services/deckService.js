@@ -80,3 +80,13 @@ export const getFlashcardsById = async (deckId) => {
         throw error;
     }
 };
+
+export const getAllFolders = async () => {
+    try {
+        const response = await serverApi.get('/api/folders');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching folders:', error);
+        throw error;
+    }
+};

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Entypo';
 
 export default function StatItem({ iconName, iconColor, number, label }) {
     return (
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingVertical: 25,
         backgroundColor: "#f7fcff",
+        width: 85
     },
     statNumber: {
         fontSize: 24,

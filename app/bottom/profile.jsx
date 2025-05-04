@@ -12,24 +12,68 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useRouter } from 'expo-router'
 import StatItem from '../../components/containers/StatItem'
+import { BarChart } from "react-native-gifted-charts";
 import ProgressBar from '../../components/containers/ProgressBar'
 import InviteFriends from '../../components/footer/InviteFriends'
 import { useQuery } from '@tanstack/react-query'
 import { getProfile } from '../../services/profileService'
+import { getAllDecks } from "../../services/deckService";
+import { getTotalFolders } from '../../services/folderService'
+import { getTotalFlashcards } from '../../services/flashcardService'
 export default function ProfileScreen() {
     const router = useRouter()
 
     const {
         data: user,
-        isLoading,
-        isError,
-        error,
+        isLoading: isUserLoading,
+        isError: isUserError,
+        error: userError,
     } = useQuery({
         queryKey: ['userProfile'],
         queryFn: getProfile,
-    })
+    });
 
-    // Du lieu tinh cho giao dien
+    const {
+        data: decksData,
+        isLoading: isDecksLoading,
+        isError: isDecksError,
+        error: decksError,
+    } = useQuery({
+        queryKey: ['decks'],
+        queryFn: getAllDecks,
+    });
+
+    const {
+        data: totalFolderData,
+        isLoading: isTotalFolderLoading,
+        isError: isTotalFolderError,
+        error: totalFolderError,
+    } = useQuery({
+        queryKey: ['totalfolders'],
+        queryFn: getTotalFolders,
+    });
+
+
+    const {
+        data: totalFlashcardData,
+        isLoading: isTotalFlashcardLoading,
+        isError: isTotalFlashcardError,
+        error: totalFlashcardError,
+    } = useQuery({
+        queryKey: ['totalflashcards'],
+        queryFn: getTotalFlashcards,
+    });
+
+    const isLoading = isUserLoading || isDecksLoading || isTotalFolderLoading || isTotalFlashcardLoading;
+
+    const error = userError || decksError || totalFolderError | totalFlashcardError;
+
+    const deckCount = decksData?.decks?.length || 0;
+
+    const folderCount = totalFolderData?.folderCount || 0;
+
+    const flashcardCount = totalFlashcardData?.flashcardCount || 0;
+
     const userData = {
         role: 'UX/UX Designer',
         hoursSpent: '14h 9m',
@@ -66,14 +110,24 @@ export default function ProfileScreen() {
         )
     }
 
-    if (isError) {
+    if (isUserError || isDecksError || isTotalFolderError || isTotalFlashcardError) {
         return (
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.center}>
-                    <Text style={styles.errorText}>Error: {error}</Text>
+                    <Text style={styles.errorText}>Error: {error?.message || 'Failed to fetch data. Please try again.'}</Text>
                 </View>
             </SafeAreaView>
-        )
+        );
+    }
+
+    if (!user) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.center}>
+                    <Text>No user data available</Text>
+                </View>
+            </SafeAreaView>
+        );
     }
 
     return (
@@ -129,16 +183,29 @@ export default function ProfileScreen() {
                         </Text>
                         <Text style={styles.hoursLabel}>Hours Spents</Text>
                     </View>
+                    {/* Bar Chart */}
+                    <View style={styles.chartContainer}>
+                        <BarChart
+                            barWidth={18}
+                            noOfSections={4}
+                            barBorderRadius={6}
+                            frontColor="lightgray"
+                            yAxisThickness={0}
+                            xAxisThickness={0}
+                            spacing={20}
+                            isAnimated
+                            data={barData}
+                        />
+                    </View>
                 </View>
 
                 {/* Progress Statistics */}
                 <View style={styles.progressContainer}>
                     <Text style={styles.sectionTitle}>Progress statistics</Text>
-                    <Text style={styles.progressTotal}>
+                    {/* <Text style={styles.progressTotal}>
                         {userData.progress.total}{' '}
                         <Text style={styles.progressLabel}>Total Activity</Text>
                     </Text>
-                    {/* Progress Bars */}
                     <ProgressBar
                         value={userData.progress.activity}
                         color="#007AFF"
@@ -150,26 +217,26 @@ export default function ProfileScreen() {
                     <ProgressBar
                         value={userData.progress.upcoming}
                         color="#ff8f00"
-                    />
+                    /> */}
                     {/* Course Stats */}
                     <View style={styles.courseStatsContainer}>
                         <StatItem
-                            iconName="clock-o"
-                            iconColor="#007AFF"
-                            number={userData.courses.inProgress}
-                            label="In Progress"
-                        />
-                        <StatItem
-                            iconName="check-circle"
+                            iconName="folder"
                             iconColor="#34C759"
-                            number={userData.courses.completed}
-                            label="Completed"
+                            number={folderCount}
+                            label="Folders"
                         />
                         <StatItem
-                            iconName="calendar"
+                            iconName="credit-card"
+                            iconColor="#007AFF"
+                            number={deckCount}
+                            label="Decks"
+                        />
+                        <StatItem
+                            iconName="documents"
                             iconColor="#FF9500"
-                            number={userData.courses.upcoming}
-                            label="Upcoming"
+                            number={flashcardCount}
+                            label="Flashcards"
                         />
                     </View>
                 </View>
