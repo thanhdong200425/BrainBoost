@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useRouter } from 'expo-router'
 import {
     View,
@@ -10,8 +10,15 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import SettingItem from '../../components/containers/SettingItem'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useDispatch } from 'react-redux'
+import { logout } from '../../redux/slices/authSlice'
+import Toast from 'react-native-toast-message'
 
 export default function SettingsScreen() {
+    const dispatch = useDispatch()
+    const router = useRouter()
+
     const settingsOptions = [
         {
             iconName: 'person-circle-outline',
@@ -46,7 +53,22 @@ export default function SettingsScreen() {
         },
     ]
 
-    const router = useRouter()
+    const handleSignOut = useCallback(async () => {
+        try {
+            await AsyncStorage.removeItem('token')
+            dispatch(logout())
+            Toast.show({
+                type: 'success',
+                text1: 'Logout successful',
+                text2: 'You have been logged out successfully.',
+                position: 'top',
+            })
+            router.replace('/auth/login')
+        } catch (error) {
+            console.error('Error signing out:', error)
+        }
+    }, [])
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.header}>
@@ -73,7 +95,7 @@ export default function SettingsScreen() {
 
                     <TouchableOpacity
                         style={styles.signOutBtn}
-                        onPress={() => {}}
+                        onPress={handleSignOut}
                     >
                         <Text style={styles.signOutText}>Sign out</Text>
                     </TouchableOpacity>
@@ -95,7 +117,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingBottom: 20,
-        marginVertical: 30,
+        marginVertical: 10,
     },
 
     headerTitle: {

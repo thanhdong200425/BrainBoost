@@ -12,14 +12,16 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useRouter } from 'expo-router'
 import StatItem from '../../components/containers/StatItem'
-import { BarChart } from "react-native-gifted-charts";
+import { BarChart } from 'react-native-gifted-charts'
 import ProgressBar from '../../components/containers/ProgressBar'
 import InviteFriends from '../../components/footer/InviteFriends'
 import { useQuery } from '@tanstack/react-query'
-import { getProfile } from '../../services/profileService'
-import { getAllDecks } from "../../services/deckService";
+import { getProfile, getQuote } from '../../services/profileService'
+import { getAllDecks } from '../../services/deckService'
 import { getTotalFolders } from '../../services/folderService'
 import { getTotalFlashcards } from '../../services/flashcardService'
+import { Ionicons } from '@expo/vector-icons'
+
 export default function ProfileScreen() {
     const router = useRouter()
 
@@ -31,7 +33,7 @@ export default function ProfileScreen() {
     } = useQuery({
         queryKey: ['userProfile'],
         queryFn: getProfile,
-    });
+    })
 
     const {
         data: decksData,
@@ -41,7 +43,7 @@ export default function ProfileScreen() {
     } = useQuery({
         queryKey: ['decks'],
         queryFn: getAllDecks,
-    });
+    })
 
     const {
         data: totalFolderData,
@@ -51,8 +53,7 @@ export default function ProfileScreen() {
     } = useQuery({
         queryKey: ['totalfolders'],
         queryFn: getTotalFolders,
-    });
-
+    })
 
     const {
         data: totalFlashcardData,
@@ -62,17 +63,37 @@ export default function ProfileScreen() {
     } = useQuery({
         queryKey: ['totalflashcards'],
         queryFn: getTotalFlashcards,
-    });
+    })
 
-    const isLoading = isUserLoading || isDecksLoading || isTotalFolderLoading || isTotalFlashcardLoading;
+    const {
+        data: quoteData,
+        isLoading: isQuoteLoading,
+        isError: isQuoteError,
+        error: quoteError,
+    } = useQuery({
+        queryKey: ['quote'],
+        queryFn: getQuote,
+    })
 
-    const error = userError || decksError || totalFolderError | totalFlashcardError;
+    const isLoading =
+        isUserLoading ||
+        isDecksLoading ||
+        isTotalFolderLoading ||
+        isTotalFlashcardLoading ||
+        isQuoteLoading
 
-    const deckCount = decksData?.decks?.length || 0;
+    const error =
+        userError ||
+        decksError ||
+        totalFolderError ||
+        isTotalFlashcardError ||
+        quoteError
 
-    const folderCount = totalFolderData?.folderCount || 0;
+    const deckCount = decksData?.decks?.length || 0
 
-    const flashcardCount = totalFlashcardData?.flashcardCount || 0;
+    const folderCount = totalFolderData?.folderCount || 0
+
+    const flashcardCount = totalFlashcardData?.flashcardCount || 0
 
     const userData = {
         role: 'UX/UX Designer',
@@ -110,14 +131,23 @@ export default function ProfileScreen() {
         )
     }
 
-    if (isUserError || isDecksError || isTotalFolderError || isTotalFlashcardError) {
+    if (
+        isUserError ||
+        isDecksError ||
+        isTotalFolderError ||
+        isTotalFlashcardError
+    ) {
         return (
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.center}>
-                    <Text style={styles.errorText}>Error: {error?.message || 'Failed to fetch data. Please try again.'}</Text>
+                    <Text style={styles.errorText}>
+                        Error:{' '}
+                        {error?.message ||
+                            'Failed to fetch data. Please try again.'}
+                    </Text>
                 </View>
             </SafeAreaView>
-        );
+        )
     }
 
     if (!user) {
@@ -127,7 +157,7 @@ export default function ProfileScreen() {
                     <Text>No user data available</Text>
                 </View>
             </SafeAreaView>
-        );
+        )
     }
 
     return (
@@ -136,13 +166,13 @@ export default function ProfileScreen() {
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()}>
-                        <Icon name="arrow-left" size={24} color="#000" />
+                        <Ionicons name="arrow-back" size={24} color="#333" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Profile</Text>
                     <TouchableOpacity
                         onPress={() => router.push('/user/setting')}
                     >
-                        <Icon name="cog" size={24} color="#000" />
+                        <Ionicons name="settings" size={24} color="#333" />
                     </TouchableOpacity>
                 </View>
 
@@ -158,13 +188,10 @@ export default function ProfileScreen() {
                     <Text style={styles.userRole}>{user.email}</Text>
                 </View>
 
-                {/* Steve Job */}
+                {/* Quote */}
                 <View style={styles.steveJobsContainer}>
-                    <Text style={styles.quoteText}>
-                        “Design is not just what it looks like and feels like.
-                        Design is how it works”
-                    </Text>
-                    <Text style={styles.authorText}>Steve Jobs</Text>
+                    <Text style={styles.quoteText}>{quoteData[0]?.q}</Text>
+                    <Text style={styles.authorText}>{quoteData[0]?.a}</Text>
                 </View>
 
                 {/* Activity Section */}
@@ -202,22 +229,6 @@ export default function ProfileScreen() {
                 {/* Progress Statistics */}
                 <View style={styles.progressContainer}>
                     <Text style={styles.sectionTitle}>Progress statistics</Text>
-                    {/* <Text style={styles.progressTotal}>
-                        {userData.progress.total}{' '}
-                        <Text style={styles.progressLabel}>Total Activity</Text>
-                    </Text>
-                    <ProgressBar
-                        value={userData.progress.activity}
-                        color="#007AFF"
-                    />
-                    <ProgressBar
-                        value={userData.progress.completed}
-                        color="#00e31f"
-                    />
-                    <ProgressBar
-                        value={userData.progress.upcoming}
-                        color="#ff8f00"
-                    /> */}
                     {/* Course Stats */}
                     <View style={styles.courseStatsContainer}>
                         <StatItem
@@ -252,6 +263,11 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     container: {
         flex: 1,
@@ -379,7 +395,6 @@ const styles = StyleSheet.create({
         color: '#002357',
     },
 
-    // Chart
     chartContainer: {
         marginTop: 10,
         padding: 5,
@@ -388,8 +403,13 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 30,
         padding: 20,
-        backgroundColor: '#F5F5F5',
-        borderRadius: 10,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
     },
     progressTotal: {
         fontSize: 24,
@@ -403,7 +423,8 @@ const styles = StyleSheet.create({
 
     courseStatsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 25,
+        justifyContent: 'space-around',
+        marginTop: 20,
+        paddingVertical: 5,
     },
 })

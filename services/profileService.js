@@ -1,3 +1,4 @@
+import axios from 'axios'
 import serverApi from '../helpers/axios'
 
 export const getProfile = async () => {
@@ -61,5 +62,18 @@ export const updateAvatar = async (avatar_url) => {
                 'An unexpected error occurred while updating avatar.',
             )
         }
+    }
+}
+
+export const getQuote = async () => {
+    try {
+        const response = await axios.get('https://zenquotes.io/api/today')
+        return response.data
+    } catch (error) {
+        console.log('Error fetching quote:', error)
+        throw new Error(
+            error.response?.data?.message ||
+                'Failed to fetch quote. Please try again.',
+        )
     }
 }
