@@ -74,6 +74,7 @@ const DeckDetailScreen = () => {
             params: {
                 flashcards: JSON.stringify(deck.flashcards),
                 deckName: deck.name,
+                deckId: id,
             },
         })
     }

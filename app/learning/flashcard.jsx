@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import {
     View,
@@ -6,20 +6,66 @@ import {
     StyleSheet,
     TouchableOpacity,
     StatusBar,
+    Dimensions,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { FlashcardFlipCarousel } from '../../components'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+const { width, height } = Dimensions.get('window')
+
 const FlashcardScreen = () => {
     const router = useRouter()
-    const { flashcards: flashcardsString, deckName } = useLocalSearchParams()
-
+    const { flashcards: flashcardsString, deckName, deckId } = useLocalSearchParams()
+    const [flashcardsLearned, setFlashcardsLearned] = useState({
+        knew: {
+            quantity: 0,
+            flashcards: [],
+        },
+        didntKnow: {
+            quantity: 0,
+            flashcards: [],
+        },
+    })
+    
     let flashcards = []
     try {
         flashcards = JSON.parse(flashcardsString || '[]')
     } catch (e) {
         console.error('Failed to parse flashcards data:', e)
+    }
+
+    const handleSwipe = (flashcard, direction) => {
+        if (direction === 'right') {
+            setFlashcardsLearned(prev => ({
+                ...prev,
+                knew: {
+                    quantity: prev.knew.quantity + 1,
+                    flashcards: [...prev.knew.flashcards, flashcard]
+                }
+            }))
+        } else if (direction === 'left') {
+            setFlashcardsLearned(prev => ({
+                ...prev,
+                didntKnow: {
+                    quantity: prev.didntKnow.quantity + 1,
+                    flashcards: [...prev.didntKnow.flashcards, flashcard]
+                }
+            }))
+        }
+    }
+
+    const handleSwipedAll = () => {
+        router.push({
+            pathname: '/result/result_flashcard',
+            params: {
+                correctCount: flashcardsLearned.knew.quantity,
+                total: flashcards.length,
+                flashcards: JSON.stringify(flashcards),
+                deckName: deckName || '',
+                deckId: deckId || "",
+            },
+        })
     }
 
     return (
@@ -38,14 +84,27 @@ const FlashcardScreen = () => {
                     <View style={{ width: 24 }} />
                 </View>
 
+                {/* Status Bar */}
+                <View style={styles.statusBar}>
+                    <View style={[styles.counterBox, {backgroundColor: "#FFEFE6", borderColor: "#FFA500"}]}>
+                        <Text style={[styles.counterText, {color: "#FFA500"}]}>{flashcardsLearned.didntKnow.quantity}</Text>
+                    </View>
+                    <View style={[styles.counterBox, {backgroundColor: "#E6FFF2", borderColor: "#33D9A6"}]}>
+                        <Text style={[styles.counterText, {color: "#33D9A6"}]}>{flashcardsLearned.knew.quantity}</Text>
+                    </View>
+                </View>
+
                 {/* Flashcard Component */}
                 {flashcards.length > 0 ? (
                     <View style={styles.carouselContainer}>
                         <FlashcardFlipCarousel
                             data={flashcards}
                             showIcon={false}
-                            cardWidth={400}
-                            cardHeight={600}
+                            cardWidth={width * 0.85}
+                            cardHeight={height * 0.6}
+                            mode="stack"
+                            onSwipe={handleSwipe}
+                            onSwipedAll={handleSwipedAll}
                         />
                     </View>
                 ) : (
@@ -95,8 +154,8 @@ const styles = StyleSheet.create({
     },
     carouselContainer: {
         flex: 1,
-        paddingTop: 20,
         alignItems: 'center',
+        justifyContent: 'center',
     },
     noCardsText: {
         flex: 1,
@@ -105,6 +164,32 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
     },
+    statusBar: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        marginTop: 8,
+        marginHorizontal: 10,
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    counterBox: {
+        width: 50,
+        height: 35,
+        borderRadius: 16,
+        borderWidth: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    counterText: {
+        fontSize: 14,
+        fontWeight: "700"}
 })
 
 export default FlashcardScreen
