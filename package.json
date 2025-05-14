@@ -42,7 +42,6 @@
         "expo-web-browser": "~14.1.6",
         "framer-motion": "^12.4.10",
         "jwt-decode": "^4.0.0",
-        "lucide-react-native": "^0.503.0",
         "react": "19.0.0",
         "react-dom": "19.0.0",
         "react-hook-form": "^7.56.1",

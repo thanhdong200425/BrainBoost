@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-import { Lightbulb } from 'lucide-react-native'
 import SubmitButton from '../../components/buttons/SubmitButton'
 import QuestionHeader from '../../components/containers/QuestionHeader'
 import AnswerOption from '../../components/containers/AnswerOption'
@@ -182,7 +181,7 @@ const LearnScreen = () => {
                 <View style={styles.questionRow}>
                     <QuestionHeader question={currentCard.question} />
                     <TouchableOpacity onPress={handleShowHint}>
-                        <Lightbulb size={26} color="#3D5CFF" />
+                        <Ionicons name="bulb" size={26} color="#3D5CFF" />
                     </TouchableOpacity>
                 </View>
 

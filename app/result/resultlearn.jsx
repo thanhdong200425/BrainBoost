@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Trophy, X, BookOpen, Repeat } from 'lucide-react-native'
+import { Ionicons } from '@expo/vector-icons'
 import SubmitButton from '../../components/buttons/SubmitButton'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -80,13 +80,13 @@ const ResultLearnScreen = () => {
                 style={styles.closeButton}
                 onPress={navigateToDeckDetails}
             >
-                <X size={28} color="#555" />
+                <Ionicons name="close" size={28} color="#555" />
             </TouchableOpacity>
 
             {passedThreshold ? (
                 <>
                     <View style={styles.trophyBox}>
-                        <Trophy size={64} color="#FFB800" />
+                        <Ionicons name="trophy" size={64} color="#FFB800" />
                     </View>
 
                     <Text style={styles.scoreText}>
@@ -104,7 +104,7 @@ const ResultLearnScreen = () => {
             ) : (
                 <>
                     <View style={styles.improvementBox}>
-                        <BookOpen size={64} color="#3D5CFF" />
+                        <Ionicons name="book" size={64} color="#3D5CFF" />
                     </View>
 
                     <Text style={styles.scoreText}>
@@ -129,7 +129,8 @@ const ResultLearnScreen = () => {
                 textStyle={styles.primaryButtonText}
                 icon={
                     passedThreshold ? null : (
-                        <Repeat
+                        <Ionicons
+                            name="refresh"
                             size={18}
                             color="#FFF"
                             style={{ marginRight: 8 }}
