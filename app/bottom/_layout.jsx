@@ -76,9 +76,9 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="library"
+                name="notification"
                 options={{
-                    title: 'Library',
+                    title: 'Notification',
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons
                             name="notifications"
@@ -86,6 +86,7 @@ export default function TabLayout() {
                             color={color}
                         />
                     ),
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen
