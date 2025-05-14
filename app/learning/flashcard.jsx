@@ -11,16 +11,22 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { FlashcardFlipCarousel } from '../../components'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+import { useDispatch } from 'react-redux'
+import {
+    setFlashcards,
+    clearFlashcards,
+} from '../../redux/slices/flashcardSlice'
 const { width, height } = Dimensions.get('window')
 
 const FlashcardScreen = () => {
     const router = useRouter()
+    const dispatch = useDispatch()
     const {
         flashcards: flashcardsString,
         deckName,
         deckId,
     } = useLocalSearchParams()
+
     const [flashcardsLearned, setFlashcardsLearned] = useState({
         knew: {
             quantity: 0,
@@ -79,6 +85,15 @@ const FlashcardScreen = () => {
             handleSwipedAll()
         }
     }, [swipeCount, flashcardsLearned, flashcards.length])
+
+    useEffect(() => {
+        if (flashcardsString) {
+            dispatch(setFlashcards(flashcardsString))
+        }
+        return () => {
+            dispatch(clearFlashcards())
+        }
+    }, [flashcardsString])
 
     return (
         <SafeAreaView style={styles.safeArea}>

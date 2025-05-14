@@ -10,6 +10,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
+import { useSelector } from 'react-redux'
 
 const { width, height } = Dimensions.get('window')
 
@@ -69,6 +70,7 @@ const Confetti = ({ show }) => {
 const FlashcardResultScreen = () => {
     const router = useRouter()
     const { correctCount, total, deckName, deckId } = useLocalSearchParams()
+    const { flashcards } = useSelector((state) => state.flashcards)
 
     const isPerfect = correctCount === total && total > 0
     const isMoreThanHalf = correctCount >= Math.ceil(total / 2) && !isPerfect
@@ -99,7 +101,7 @@ const FlashcardResultScreen = () => {
         router.push({
             pathname: '/learning/flashcard',
             params: {
-                flashcards: params.flashcards,
+                flashcards,
                 deckName,
                 deckId,
             },
