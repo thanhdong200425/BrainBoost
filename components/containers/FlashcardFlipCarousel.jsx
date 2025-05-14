@@ -32,10 +32,7 @@ const FlashcardFlipCarousel = ({
         >
             {/* Front Face */}
             <View
-                style={[
-                    styles.face,
-                    { width: cardWidth, height: cardHeight },
-                ]}
+                style={[styles.face, { width: cardWidth, height: cardHeight }]}
             >
                 <Text style={styles.cardText}>{item.frontText}</Text>
                 {showIcon && (
@@ -54,10 +51,7 @@ const FlashcardFlipCarousel = ({
 
             {/* Back Face */}
             <View
-                style={[
-                    styles.back,
-                    { width: cardWidth, height: cardHeight },
-                ]}
+                style={[styles.back, { width: cardWidth, height: cardHeight }]}
             >
                 <Text style={styles.cardText}>{item.backText}</Text>
                 {showIcon && (
@@ -77,7 +71,13 @@ const FlashcardFlipCarousel = ({
     )
 
     return (
-        <View style={mode === 'carousel' ? styles.carouselContainer : styles.swiperContainer}>
+        <View
+            style={
+                mode === 'carousel'
+                    ? styles.carouselContainer
+                    : styles.swiperContainer
+            }
+        >
             {mode === 'carousel' ? (
                 <Carousel
                     width={cardWidth}
@@ -95,19 +95,24 @@ const FlashcardFlipCarousel = ({
                 <Swiper
                     cards={data}
                     renderCard={(item) => renderFlashcard(item)}
-                    onSwipedLeft={(cardIndex) => onSwipe?.(data[cardIndex], 'left')}
-                    onSwipedRight={(cardIndex) => onSwipe?.(data[cardIndex], 'right')}
+                    onSwipedLeft={(cardIndex) =>
+                        onSwipe(data[cardIndex], 'left')
+                    }
+                    onSwipedRight={(cardIndex) =>
+                        onSwipe(data[cardIndex], 'right')
+                    }
                     onSwipedAll={onSwipedAll}
+                    verticalSwipe={false}
                     cardIndex={0}
                     backgroundColor={'transparent'}
-                    stackSize={3}
                     stackSeparation={15}
+                    stackSize={3}
                     overlayLabels={{
                         left: {
                             title: "Didn't Know",
                             style: {
                                 label: {
-                                    backgroundColor: "#FFA500",
+                                    backgroundColor: '#FFA500',
                                     color: 'white',
                                     fontSize: 16,
                                     fontWeight: 'bold',
@@ -120,14 +125,14 @@ const FlashcardFlipCarousel = ({
                                     justifyContent: 'flex-start',
                                     marginTop: 20,
                                     marginLeft: -20,
-                                }
-                            }
+                                },
+                            },
                         },
                         right: {
                             title: 'Knew It!',
                             style: {
                                 label: {
-                                    backgroundColor: "#33D9A6",
+                                    backgroundColor: '#33D9A6',
                                     color: 'white',
                                     fontSize: 16,
                                     fontWeight: 'bold',
@@ -140,9 +145,9 @@ const FlashcardFlipCarousel = ({
                                     justifyContent: 'flex-start',
                                     marginTop: 20,
                                     marginLeft: 20,
-                                }
-                            }
-                        }
+                                },
+                            },
+                        },
                     }}
                     animateOverlayLabelsOpacity
                     animateCardOpacity

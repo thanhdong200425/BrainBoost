@@ -29,6 +29,7 @@ export default function Index() {
                 style={{ flex: 1, justifyContent: 'center' }}
             />
         )
+    console.log(data?.token)
 
     if (data?.token) return <Redirect href="/bottom/home" />
 
