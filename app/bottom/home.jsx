@@ -68,7 +68,7 @@ export default function HomeScreen() {
 
     const navigateToClassDetail = useCallback(
         (item) => {
-            router.push('/classdetail')
+            router.push('/decks/classdetail')
         },
         [router],
     )
