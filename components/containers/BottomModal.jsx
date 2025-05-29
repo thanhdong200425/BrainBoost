@@ -17,9 +17,6 @@ const BottomModal = ({ isVisible, onClose, onAddDeck }) => (
             <TouchableOpacity style={styles.modalItem} onPress={onAddDeck}>
                 <Text style={styles.modalText}>Add Decks</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalItem}>
-                <Text style={styles.modalText}>Add Folders</Text>
-            </TouchableOpacity>
             <TouchableOpacity onPress={onClose} style={styles.modalItem}>
                 <Text style={[styles.modalText, { color: '#999' }]}>
                     Cancel
