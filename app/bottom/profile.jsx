@@ -180,7 +180,9 @@ export default function ProfileScreen() {
                 <View style={styles.userInfoContainer}>
                     <View style={styles.avatarContainer}>
                         <Image
-                            source={{ uri: user.avatar_url }}
+                            source={{
+                                uri: 'https://picsum.photos/id/63/200/300',
+                            }}
                             style={styles.avatar}
                         />
                     </View>
@@ -195,7 +197,7 @@ export default function ProfileScreen() {
                 </View>
 
                 {/* Activity Section */}
-                <View style={styles.activityContainer}>
+                {/* <View style={styles.activityContainer}>
                     <View style={styles.activityHeaderContainer}>
                         <Text style={styles.sectionTitle}>Activity</Text>
                         <TouchableOpacity style={styles.dropdown}>
@@ -211,7 +213,7 @@ export default function ProfileScreen() {
                         <Text style={styles.hoursLabel}>Hours Spents</Text>
                     </View>
                     {/* Bar Chart */}
-                    <View style={styles.chartContainer}>
+                {/* <View style={styles.chartContainer}>
                         <BarChart
                             barWidth={18}
                             noOfSections={4}
@@ -223,8 +225,8 @@ export default function ProfileScreen() {
                             isAnimated
                             data={barData}
                         />
-                    </View>
-                </View>
+                    </View> */}
+                {/* </View>  */}
 
                 {/* Progress Statistics */}
                 <View style={styles.progressContainer}>

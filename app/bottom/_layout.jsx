@@ -25,6 +25,28 @@ export default function TabLayout() {
         router.push('/decks/adddeck')
     }
 
+    const handleCreateClass = () => {
+        setModalVisible(false)
+        router.push({
+            pathname: '/decks/classdetail',
+            params: {
+                classId: 'new',
+                classTitle: 'New Class',
+            },
+        })
+    }
+
+    const handleCreateFolder = () => {
+        setModalVisible(false)
+        router.push({
+            pathname: '/decks/folderdetail',
+            params: {
+                folderId: 'new',
+                folderTitle: 'New Folder',
+            },
+        })
+    }
+
     const handleCloseModal = () => {
         setModalVisible(false)
     }
@@ -41,15 +63,15 @@ export default function TabLayout() {
                 icon: 'folder-outline',
                 text: 'Folder',
                 description: 'Organize your study materials',
-                disabled: true,
-                onPress: () => {},
+                disabled: false,
+                onPress: handleCreateFolder,
             },
             {
                 icon: 'people-outline',
                 text: 'Class',
                 description: 'Share sets and study together',
-                disabled: true,
-                onPress: () => {},
+                disabled: false,
+                onPress: handleCreateClass,
             },
         ],
         [],

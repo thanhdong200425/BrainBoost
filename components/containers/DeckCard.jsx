@@ -11,6 +11,7 @@ export default function DeckCard({
     onPress,
     onEdit,
     onStudy,
+    onLongPress,
     isSelected = false,
 }) {
     const lastUpdated = formatDistanceToNow(new Date(updatedAt), {
@@ -21,6 +22,7 @@ export default function DeckCard({
         <TouchableOpacity
             style={[styles.card, isSelected && styles.selectedCard]}
             onPress={onPress}
+            onLongPress={onLongPress}
             activeOpacity={0.7}
         >
             {/* Header */}

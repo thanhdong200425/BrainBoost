@@ -1,75 +1,82 @@
-import React from "react";
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { formatDistanceToNow } from "date-fns";
-import { CARD_WIDTH } from "../../constants/sizes";
+import React from 'react'
+import {
+    ScrollView,
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+} from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { formatDistanceToNow } from 'date-fns'
+import { CARD_WIDTH } from '../../constants/sizes'
 
-const ContentCarousel = ({ 
-    items, 
+const ContentCarousel = ({
+    items,
     type = 'deck', // 'deck', 'class', or 'folder'
-    selectedIndex, 
-    onScroll, 
-    onPressItem 
+    selectedIndex,
+    onScroll,
+    onPressItem,
 }) => {
     const getIcon = (item) => {
         switch (type) {
             case 'deck':
-                return item.visibility === "private" ? "lock" : "earth";
+                return item.visibility === 'private' ? 'lock' : 'earth'
             case 'class':
-                return "account-group";
+                return 'account-group'
             case 'folder':
-                return "folder";
+                return 'folder'
             default:
-                return "notebook";
+                return 'notebook'
         }
-    };
+    }
 
     const getSubtitle = (item) => {
         switch (type) {
             case 'class':
+                return `${item.studentQuantity || 0} students`
             case 'folder':
-                return `${item.studentQuantity} students`;
+                return `Personal organization folder`
             case 'deck':
-                return item.description;
+                return item.description
             default:
-                return '';
+                return ''
         }
-    };
+    }
 
     const getCardStyle = (isActive) => {
-        const baseStyle = [styles.cardContainer];
-        if (isActive) baseStyle.push(styles.activeCard);
+        const baseStyle = [styles.cardContainer]
+        if (isActive) baseStyle.push(styles.activeCard)
 
         switch (type) {
             case 'deck':
-                baseStyle.push(styles.deckCard);
-                if (isActive) baseStyle.push(styles.activeDeckCard);
-                break;
+                baseStyle.push(styles.deckCard)
+                if (isActive) baseStyle.push(styles.activeDeckCard)
+                break
             case 'class':
-                baseStyle.push(styles.classCard);
-                if (isActive) baseStyle.push(styles.activeClassCard);
-                break;
+                baseStyle.push(styles.classCard)
+                if (isActive) baseStyle.push(styles.activeClassCard)
+                break
             case 'folder':
-                baseStyle.push(styles.folderCard);
-                if (isActive) baseStyle.push(styles.activeFolderCard);
-                break;
+                baseStyle.push(styles.folderCard)
+                if (isActive) baseStyle.push(styles.activeFolderCard)
+                break
         }
 
-        return baseStyle;
-    };
+        return baseStyle
+    }
 
     const getContentIcon = () => {
         switch (type) {
             case 'deck':
-                return "cards-outline";
+                return 'cards-outline'
             case 'class':
-                return "school-outline";
+                return 'school-outline'
             case 'folder':
-                return "folder-multiple-outline";
+                return 'folder-multiple-outline'
             default:
-                return "notebook-outline";
+                return 'notebook-outline'
         }
-    };
+    }
 
     return (
         <ScrollView
@@ -77,13 +84,14 @@ const ContentCarousel = ({
             showsHorizontalScrollIndicator={false}
             onScroll={onScroll}
             scrollEventThrottle={16}
-            contentContainerStyle={[
-                styles.scrollContainer,
-            ]}
+            contentContainerStyle={[styles.scrollContainer]}
         >
             {items.map((item, index) => {
-                const isActive = index === selectedIndex;
-                const lastUpdated = formatDistanceToNow(new Date(item.updatedAt), { addSuffix: true });
+                const isActive = index === selectedIndex
+                const lastUpdated = formatDistanceToNow(
+                    new Date(item.updatedAt),
+                    { addSuffix: true },
+                )
 
                 return (
                     <TouchableOpacity
@@ -96,64 +104,77 @@ const ContentCarousel = ({
                             <MaterialCommunityIcons
                                 name={getIcon(item)}
                                 size={20}
-                                color={isActive ? "#3D5CFF" : "#666"}
+                                color={isActive ? '#3D5CFF' : '#666'}
                             />
                             {type === 'deck' && (
                                 <Text style={styles.visibilityText}>
-                                    {item.visibility === "private" ? "Private" : "Public"}
+                                    {item.visibility === 'private'
+                                        ? 'Private'
+                                        : 'Public'}
                                 </Text>
                             )}
                         </View>
 
                         <View style={styles.content}>
-                            <View style={[
-                                styles.iconContainer,
-                                type === 'deck' && styles.deckIconContainer,
-                                type === 'class' && styles.classIconContainer,
-                                type === 'folder' && styles.folderIconContainer,
-                                isActive && styles.activeIconContainer
-                            ]}>
+                            <View
+                                style={[
+                                    styles.iconContainer,
+                                    type === 'deck' && styles.deckIconContainer,
+                                    type === 'class' &&
+                                        styles.classIconContainer,
+                                    type === 'folder' &&
+                                        styles.folderIconContainer,
+                                    isActive && styles.activeIconContainer,
+                                ]}
+                            >
                                 <MaterialCommunityIcons
                                     name={getContentIcon()}
                                     size={32}
-                                    color={isActive ? "#fff" : "#666"}
+                                    color={isActive ? '#fff' : '#666'}
                                 />
                             </View>
-                            <Text style={[
-                                styles.title,
-                                type === 'deck' && styles.deckTitle,
-                                type === 'class' && styles.classTitle,
-                                type === 'folder' && styles.folderTitle,
-                                isActive && styles.activeTitle
-                            ]}>
+                            <Text
+                                style={[
+                                    styles.title,
+                                    type === 'deck' && styles.deckTitle,
+                                    type === 'class' && styles.classTitle,
+                                    type === 'folder' && styles.folderTitle,
+                                    isActive && styles.activeTitle,
+                                ]}
+                            >
                                 {item.name}
                             </Text>
-                            <Text style={[
-                                styles.subtitle,
-                                type === 'deck' && styles.deckSubtitle,
-                                type === 'class' && styles.classSubtitle,
-                                type === 'folder' && styles.folderSubtitle,
-                            ]} numberOfLines={2}>
+                            <Text
+                                style={[
+                                    styles.subtitle,
+                                    type === 'deck' && styles.deckSubtitle,
+                                    type === 'class' && styles.classSubtitle,
+                                    type === 'folder' && styles.folderSubtitle,
+                                ]}
+                                numberOfLines={2}
+                            >
                                 {getSubtitle(item)}
                             </Text>
                         </View>
 
-                        <View style={[
-                            styles.footer,
-                            type === 'deck' && styles.deckFooter,
-                            type === 'class' && styles.classFooter,
-                            type === 'folder' && styles.folderFooter,
-                        ]}>
+                        <View
+                            style={[
+                                styles.footer,
+                                type === 'deck' && styles.deckFooter,
+                                type === 'class' && styles.classFooter,
+                                type === 'folder' && styles.folderFooter,
+                            ]}
+                        >
                             <Text style={styles.timeText}>
                                 Updated {lastUpdated}
                             </Text>
                         </View>
                     </TouchableOpacity>
-                );
+                )
             })}
         </ScrollView>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     scrollContainer: {
@@ -167,7 +188,7 @@ const styles = StyleSheet.create({
         marginRight: 20,
         borderRadius: 16,
         padding: 16,
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
@@ -180,100 +201,100 @@ const styles = StyleSheet.create({
     },
     // Deck specific styles
     deckCard: {
-        backgroundColor: "#F8F9FF",
-        borderColor: "#E0E5FF",
+        backgroundColor: '#F8F9FF',
+        borderColor: '#E0E5FF',
     },
     activeDeckCard: {
-        backgroundColor: "#EDF0FF",
-        borderColor: "#3D5CFF",
+        backgroundColor: '#EDF0FF',
+        borderColor: '#3D5CFF',
     },
     deckIconContainer: {
-        backgroundColor: "#E0E5FF",
+        backgroundColor: '#E0E5FF',
         padding: 16,
         borderRadius: 16,
     },
     deckTitle: {
-        color: "#3D5CFF",
+        color: '#3D5CFF',
     },
     deckSubtitle: {
-        color: "#666",
+        color: '#666',
     },
     deckFooter: {
-        borderTopColor: "#E0E5FF",
+        borderTopColor: '#E0E5FF',
     },
     // Class specific styles
     classCard: {
-        backgroundColor: "#FFF9F0",
-        borderColor: "#FFE0B2",
+        backgroundColor: '#FFF9F0',
+        borderColor: '#FFE0B2',
     },
     activeClassCard: {
-        backgroundColor: "#FFF3E0",
-        borderColor: "#FFB74D",
+        backgroundColor: '#FFF3E0',
+        borderColor: '#FFB74D',
     },
     classIconContainer: {
-        backgroundColor: "#FFB74D",
+        backgroundColor: '#FFB74D',
         padding: 16,
         borderRadius: 16,
     },
     classTitle: {
-        color: "#F57C00",
+        color: '#F57C00',
     },
     classSubtitle: {
-        color: "#666",
+        color: '#666',
     },
     classFooter: {
-        borderTopColor: "#FFE0B2",
+        borderTopColor: '#FFE0B2',
     },
     // Folder specific styles
     folderCard: {
-        backgroundColor: "#F0F7FF",
-        borderColor: "#BBDEFB",
+        backgroundColor: '#F0F7FF',
+        borderColor: '#BBDEFB',
     },
     activeFolderCard: {
-        backgroundColor: "#E3F2FD",
-        borderColor: "#64B5F6",
+        backgroundColor: '#E3F2FD',
+        borderColor: '#64B5F6',
     },
     folderIconContainer: {
-        backgroundColor: "#64B5F6",
+        backgroundColor: '#64B5F6',
         padding: 16,
         borderRadius: 16,
     },
     folderTitle: {
-        color: "#1976D2",
+        color: '#1976D2',
     },
     folderSubtitle: {
-        color: "#666",
+        color: '#666',
     },
     folderFooter: {
-        borderTopColor: "#BBDEFB",
+        borderTopColor: '#BBDEFB',
     },
     // Active states
     activeIconContainer: {
         transform: [{ scale: 1.1 }],
     },
     activeTitle: {
-        fontWeight: "700",
+        fontWeight: '700',
     },
     // Common styles
     header: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 16,
     },
     visibilityText: {
         marginLeft: 6,
         fontSize: 12,
-        color: "#666",
+        color: '#666',
     },
     content: {
-        alignItems: "center",
+        alignItems: 'center',
         marginBottom: 16,
     },
     iconContainer: {
         marginBottom: 16,
         padding: 16,
         borderRadius: 16,
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -281,24 +302,24 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: "600",
-        textAlign: "center",
+        fontWeight: '600',
+        textAlign: 'center',
         marginBottom: 8,
     },
     subtitle: {
         fontSize: 14,
-        textAlign: "center",
+        textAlign: 'center',
         lineHeight: 20,
     },
     footer: {
         borderTopWidth: 1,
         paddingTop: 12,
-        alignItems: "center",
+        alignItems: 'center',
     },
     timeText: {
         fontSize: 12,
-        color: "#999",
+        color: '#999',
     },
-});
+})
 
-export default ContentCarousel; 
+export default ContentCarousel

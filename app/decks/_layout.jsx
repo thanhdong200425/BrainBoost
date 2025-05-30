@@ -1,11 +1,13 @@
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router'
 
 export default function DecksLayout() {
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="adddeck" />
-      <Stack.Screen name="deckdetail" />
-      <Stack.Screen name="editdeck" />
-    </Stack>
-  );
+    return (
+        <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="adddeck" />
+            <Stack.Screen name="deckdetail" />
+            <Stack.Screen name="editdeck" />
+            <Stack.Screen name="classdetail" />
+            <Stack.Screen name="studieddecks" />
+        </Stack>
+    )
 }

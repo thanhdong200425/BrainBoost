@@ -1,25 +1,32 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import React from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 
 const HomeHeader = ({ userData }) => {
-    const router = useRouter();
+    const router = useRouter()
 
     return (
         <View style={styles.headerContainer}>
             {/* Search and Profile Row */}
             <View style={styles.topRow}>
-                <TouchableOpacity 
-                    onPress={() => router.push('/search/searchpage')} 
+                <TouchableOpacity
+                    onPress={() => router.push('/search/searchpage')}
                     style={styles.searchContainer}
                 >
-                    <Ionicons name="search" size={24} color="#666" style={{ marginLeft: 12 }} />
+                    <Ionicons
+                        name="search"
+                        size={24}
+                        color="#666"
+                        style={{ marginLeft: 12 }}
+                    />
                     <Text style={styles.searchInput}>Search everything</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push('/bottom/profile')}>
-                    <Image 
-                        source={{ uri: 'https://picsum.photos/200' }}
+                <TouchableOpacity
+                    onPress={() => router.push('/bottom/profile')}
+                >
+                    <Image
+                        source={{ uri: 'https://picsum.photos/id/63/200/300' }}
                         style={styles.profileImage}
                     />
                 </TouchableOpacity>
@@ -28,11 +35,13 @@ const HomeHeader = ({ userData }) => {
             {/* Greeting Section */}
             <View style={styles.greetingContainer}>
                 <Text style={styles.greeting}>Hi, {userData.name}</Text>
-                <Text style={styles.subGreeting}>Ready to boost your vocabulary?</Text>
+                <Text style={styles.subGreeting}>
+                    Ready to boost your vocabulary?
+                </Text>
             </View>
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     headerContainer: {
@@ -72,8 +81,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#3D5CFF',
     },
-    greetingContainer: {
-    },
+    greetingContainer: {},
     greeting: {
         fontSize: 28,
         fontWeight: 'bold',
@@ -85,6 +93,6 @@ const styles = StyleSheet.create({
         color: '#666',
         letterSpacing: 0.3,
     },
-});
+})
 
-export default HomeHeader;
+export default HomeHeader

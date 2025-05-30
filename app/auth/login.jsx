@@ -18,6 +18,7 @@ import {
 } from '../../components'
 import Toast from 'react-native-toast-message'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { getProfile } from '../../services/profileService'
 
 export default function LoginScreen() {
     const router = useRouter()
@@ -30,9 +31,11 @@ export default function LoginScreen() {
         mutationFn: signIn,
         onSuccess: async (data) => {
             await AsyncStorage.setItem('token', data.token)
+            const user = await getProfile()
             dispatch(
                 setCredentials({
                     accessToken: data.token,
+                    user,
                 }),
             )
             Toast.show({

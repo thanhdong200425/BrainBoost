@@ -2,7 +2,12 @@ import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import Modal from 'react-native-modal'
 
-const BottomModal = ({ isVisible, onClose, onAddDeck }) => (
+const BottomModal = ({
+    isVisible,
+    onClose,
+    onAddDeck,
+    showInviteMembers = true,
+}) => (
     <Modal
         isVisible={isVisible}
         onBackdropPress={onClose}
@@ -11,9 +16,11 @@ const BottomModal = ({ isVisible, onClose, onAddDeck }) => (
         style={{ justifyContent: 'flex-end', margin: 0 }}
     >
         <View style={styles.modalContainer}>
-            <TouchableOpacity style={styles.modalItem}>
-                <Text style={styles.modalText}>Invite Members</Text>
-            </TouchableOpacity>
+            {showInviteMembers && (
+                <TouchableOpacity style={styles.modalItem}>
+                    <Text style={styles.modalText}>Invite Members</Text>
+                </TouchableOpacity>
+            )}
             <TouchableOpacity style={styles.modalItem} onPress={onAddDeck}>
                 <Text style={styles.modalText}>Add Decks</Text>
             </TouchableOpacity>

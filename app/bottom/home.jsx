@@ -16,6 +16,7 @@ import { generateDeckWithAI, getHomeData } from '../../services/homeService'
 import { ITEM_WIDTH } from '../../constants/sizes'
 import { useSelector } from 'react-redux'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import ProgressSummaryCard from '../../components/others/ProgressSummaryCard'
 
 export default function HomeScreen() {
     const router = useRouter()
@@ -25,6 +26,7 @@ export default function HomeScreen() {
     const [topic, setTopic] = useState('')
     const [isModalVisible, setIsModalVisible] = useState(false)
     const accessToken = useSelector((state) => state.auth.accessToken)
+    const user = useSelector((state) => state.auth.user)
 
     const {
         data: homeData,
@@ -67,15 +69,27 @@ export default function HomeScreen() {
     )
 
     const navigateToClassDetail = useCallback(
-        (item) => {
-            router.push('/decks/classdetail')
+        (classItem) => {
+            router.push({
+                pathname: '/decks/classdetail',
+                params: {
+                    classId: classItem.id,
+                    classTitle: classItem.name,
+                },
+            })
         },
         [router],
     )
 
     const navigateToFolderDetail = useCallback(
-        (item) => {
-            router.push('/folderdetail')
+        (folderItem) => {
+            router.push({
+                pathname: '/decks/folderdetail',
+                params: {
+                    folderId: folderItem.id,
+                    folderTitle: folderItem.name,
+                },
+            })
         },
         [router],
     )
@@ -110,7 +124,7 @@ export default function HomeScreen() {
     const safeHomeData = homeData || { decks: [], classes: [], folders: [] }
 
     const userData = {
-        name: 'Dong',
+        name: user?.username || 'there',
         progress: [
             {
                 name: 'Good',
@@ -192,36 +206,12 @@ export default function HomeScreen() {
                         onPressItem={navigateToFolderDetail}
                     />
 
-                    <Text style={styles.sectionTitle}>Your Progress Chart</Text>
-                    <View style={styles.chartContainer}>
-                        <PieChart
-                            data={userData.progress.map((item) => ({
-                                name: item.name,
-                                population: item.percentage,
-                                color: item.color,
-                                legendFontColor: item.legendFontColor,
-                                legendFontSize: item.legendFontSize,
-                            }))}
-                            width={170}
-                            height={170}
-                            chartConfig={{
-                                backgroundGradientFrom: '#fff',
-                                backgroundGradientTo: '#fff',
-                                color: (opacity = 1) =>
-                                    `rgba(0, 0, 0, ${opacity})`,
-                                labelColor: (opacity = 1) =>
-                                    `rgba(0, 0, 0, ${opacity})`,
-                                decimalPlaces: 0,
-                            }}
-                            accessor="population"
-                            backgroundColor="transparent"
-                            paddingLeft="50"
-                            absolute
-                            style={{ alignSelf: 'center' }}
-                            hasLegend={false}
-                        />
-                        <PieLegend data={userData.progress} />
-                    </View>
+                    <ProgressSummaryCard
+                        progress={userData.progress[0].percentage}
+                        decks={safeHomeData.decks?.length || 0}
+                        classes={safeHomeData.classes?.length || 0}
+                        folders={safeHomeData.folders?.length || 0}
+                    />
                 </View>
             </ScrollView>
 

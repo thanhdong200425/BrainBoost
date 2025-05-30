@@ -14,7 +14,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 
 export default function StudiedDecksScreen() {
     const router = useRouter()
-    const { classTitle, returnTo } = useLocalSearchParams()
+    const { classId, classTitle, folderId, folderTitle, returnTo } =
+        useLocalSearchParams()
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['decks'],
@@ -37,12 +38,23 @@ export default function StudiedDecksScreen() {
             router.replace({
                 pathname: '/decks/classdetail',
                 params: {
+                    classId,
                     classTitle,
+                    selectedDecks: JSON.stringify(selectedDecks),
+                },
+            })
+        } else if (returnTo === 'folderdetail') {
+            router.replace({
+                pathname: '/decks/folderdetail',
+                params: {
+                    folderId,
+                    folderTitle,
                     selectedDecks: JSON.stringify(selectedDecks),
                 },
             })
         }
     }
+
     const handleEditDeck = (deck) => {
         router.push({
             pathname: '/decks/editdeck',
@@ -60,6 +72,13 @@ export default function StudiedDecksScreen() {
         })
     }
 
+    const getTitle = () => {
+        if (returnTo === 'folderdetail') {
+            return `Add decks to ${folderTitle || 'folder'}`
+        }
+        return `Add decks to ${classTitle || 'class'}`
+    }
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.header}>
@@ -70,14 +89,14 @@ export default function StudiedDecksScreen() {
             </View>
 
             <View style={styles.container}>
-                <Text style={styles.title}>Add Deck</Text>
+                <Text style={styles.title}>{getTitle()}</Text>
                 <TouchableOpacity onPress={() => router.push('/decks/adddeck')}>
                     <Text style={styles.newSetText}>+ Create new decks</Text>
                 </TouchableOpacity>
 
                 {isLoading && <Text>Loading...</Text>}
                 {isError && (
-                    <Text style={styles.errorText}>Lỗi: {error.message}</Text>
+                    <Text style={styles.errorText}>Error: {error.message}</Text>
                 )}
 
                 <FlatList
@@ -127,7 +146,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 10,
